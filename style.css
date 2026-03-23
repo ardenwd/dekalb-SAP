@@ -1,0 +1,143 @@
+html {
+  font-family: "Work Sans", "Open Sans", Arial, Helvetica, sans-serif;
+
+  font-size: 16px;
+  display: flex;
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+.logo {
+  font-family: "Averia Serif Libre";
+  padding: 2rem;
+  font-size: 2rem;
+  text-align: center;
+  color: rgb(218, 24, 24);
+}
+
+body {
+  margin: 0% 25%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.title-container {
+  padding: 30% 0 4rem 0;
+  /* padding-top: 10rem; */
+  /* max-width: 90%; */
+  margin: auto;
+}
+
+.title {
+  line-height: 3.5rem;
+  font-size: 3rem;
+  font-weight: 400;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.subtitle {
+  /* margin: 5% 0; */
+  /* padding: 2rem; */
+  line-height: 1.3rem;
+  color: rgb(116, 116, 116);
+  font-size: 1.1rem;
+  font-weight: 300;
+  text-align: justify;
+  word-break: normal;
+}
+
+.title-date {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.main-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.vis-header {
+  font-weight: 500;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+p {
+  font-size: 1.1rem;
+}
+
+.intro-text {
+  padding-bottom: 0px;
+}
+
+.story-text {
+  font-size: 1.3rem;
+  background-color: rgba(218, 218, 205, 0.8);
+  z-index: 10;
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+#tooltip {
+  position: absolute;
+  background: rgba(255, 246, 235, 0.8);
+  color: rgb(5, 5, 0, 0.8);
+  padding: 8px 12px;
+  border-radius: 6px;
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+
+#vis-wrapper {
+  padding-top: 40px;
+}
+.scrollmagic-pin-spacer {
+  /* height: 0; */
+}
+
+#vis {
+  width: 100%;
+  /* transform: translate(0%, 40%); */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+svg {
+  width: 80%;
+  height: 80%;
+}
+.section {
+  /* display: flex; */
+  /* height: 80%;
+  flex-basis: auto; */
+  padding-bottom: 80%;
+}
+.section.first {
+  padding-bottom: 0px;
+}
+
+/* //smaller screens */
+@media (max-width: 1200px) {
+  html {
+    font-size: 12px;
+  }
+}
+/* small and handheld screens */
+@media (max-width: 700px) {
+  html {
+    font-size: 10px;
+  }
+  body {
+    margin: 0% 5%;
+  }
+}

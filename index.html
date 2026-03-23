@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3 Schools Visualization</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/plugins/animation.gsap.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <header>
+    <a href="ardipi.com"> <div class="logo">Data Stories with Arden</div></a>
+  </header>
+  <body>
+    <div class="title-container">
+      <h1 class="title">
+        The DeKalb County School District’s Student Assignment Project
+      </h1>
+      <h2 class="subtitle">
+        Exploring the proposed changes for closing and repurposing underutilized
+        schools in the DCSD.
+      </h2>
+      <p class="title-date">Updated: March 8 2026, 7:37pm EST</p>
+    </div>
+    <!-- sections indicate text areas -->
+    <div class="main-body">
+      <p class="intro-text">
+        DeKalb County schools are facing an enrollment crisis. Continuing
+        decline in enrollment has caused the district to establish an advisory
+        board to reallocate buildings in the district for alternative uses.
+        These changes are intended to address under and overcapacity in the
+        district’s schools, improve out of date facilities, strengthen student
+        programs, and make transportation routes more efficient. Following
+        months of research, the Student Assignment Project (SAP) committee has
+        proposed a list of “scenarios” to close, renovate, and repurpose school
+        buildings.
+      </p>
+
+      <div id="vis-wrapper">
+        <h2 class="vis-header">DeKalb County Schools in SAP</h2>
+        <div id="vis"></div>
+      </div>
+      <div class="section" id="start">
+        <p class="story-text">
+          These are the 115 schools the committee is considering in its
+          consolidation efforts. The board highlights the growing number of
+          unoccupied seats and the potential for better distribution of
+          enrollment at these schools as the main reason for the changes.
+        </p>
+      </div>
+      <!-- only vis container -->
+
+      <!-- use id to indicate change in vis view-->
+
+      <div class="section" id="typeVis">
+        <p class="story-text">
+          Because of student needs and population density, the number of
+          elementary schools in the area in greatest, followed by middle
+          schools, then high schools.
+        </p>
+      </div>
+      <div class="section" id="repurposeVis">
+        <p class="story-text">
+          The proposal has designations for each of these schools, with some
+          buildings being repurposed for another grade range, some being
+          renovated for future use, and others being reassigned as some other
+          education facilities.
+        </p>
+      </div>
+      <div class="section"></div>
+
+      <svg id="viz" width="1200" height="800"></svg>
+      <div id="tooltip" class="hidden tooltip">
+        <p id="tooltip-school"></p>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
