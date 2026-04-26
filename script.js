@@ -8,14 +8,16 @@ var height =
 
 svg.attr("height", height).attr("width", width);
 
+var lastSquare = null;
 //scale for lat and long
 var lscale;
 
 //scale for capacity %
 var capScale;
 
+const capRectScale = d3.scaleLinear().domain([0, 2]).range([6, 92]);
 const typeColors = ["#4E7415", "#8CAA3D", "#CCC853", "gray"];
-const fUseColors = [""];
+const futureUseColors = ["#ffbbdc", "#c9aeee", "#a4c2f5", "#da5656"];
 const fUseOrder = [];
 const order = {
   High: 0,
@@ -61,6 +63,8 @@ d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
   drawSchoolsOnMap(0);
   colorsByCapacity(0);
 
+  dataTest(data);
+  // gradientKey(test);
   var schoolsMapScene = new ScrollMagic.Scene({
     triggerElement: "#vis-wrapper",
     triggerHook: 0,
@@ -213,7 +217,7 @@ function colorsByCapacity() {
     .attr("fill", (d) => {
       return capScale(d.en_per);
     });
-  gradientKey();
+  gradientKey(svg);
 }
 
 function schoolsVis(data) {
@@ -384,7 +388,7 @@ function makeKey(visNum) {
     .attr("rx", 6);
 }
 
-function gradientKey() {
+function gradientKey(svg) {
   // Add a defs section for the gradient
   const defs = svg.append("defs");
 
@@ -430,8 +434,6 @@ function gradientKey() {
     .attr("height", 15)
     .style("fill", "url(#cap-gradient)");
 
-  const capRectScale = d3.scaleLinear().domain([0, 2]).range([6, 92]);
-
   const xAxis = d3
     .axisBottom(capRectScale)
     .tickValues([0, 1, 2])
@@ -464,4 +466,283 @@ function gradientKey() {
 
 function removeKey() {
   d3.select(".key").remove();
+}
+
+//----TEST----
+var test = d3
+  .select("#vis-test")
+  .append("svg")
+  .attr("id", "vis-test")
+  .attr("height", 500)
+  .attr("width", 800);
+
+// Create layers in correct order
+const bgLayer = test.append("g").attr("class", "bg-layer");
+const circleLayer = test.append("g").attr("class", "circle-layer");
+const futureUseOverlayLayer = test
+  .append("g")
+  .attr("class", "future-use-overlay-layer");
+const overlayLayer = test.append("g").attr("class", "overlay-layer");
+
+function dataTest(data) {
+  const w = 46;
+  const rowNum = 12;
+  const r = 2;
+
+  // --- BACKGROUND SQUARES ---
+  bgLayer
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .selectAll(".squares")
+    .data(data)
+    .join("rect")
+    .attr("class", "squares")
+    .attr("width", w)
+    .attr("height", w)
+    .attr("fill", "#f0f0f000")
+    .attr("stroke", "black")
+    .attr("stroke-width", 1)
+    .attr("x", (d, i) => (i % rowNum) * w)
+    .attr("y", (d, i) => Math.floor(i / rowNum) * w);
+
+  // --- CIRCLES (middle layer) ---
+  // cheapCollision(data, circleLayer, rowNum, w, r);
+
+  ttOverlay(data, w, rowNum);
+  // ---BUTTONS---
+
+  // Map button IDs to their specific functions
+  const buttonActions = {
+    "elementary-button": (isActive) => filterElementary(isActive),
+    "middle-button": (isActive) => filterMiddle(isActive),
+    "high-button": (isActive) => filterHigh(isActive),
+    "to-close-button": (isActive) => filterToClose(isActive),
+
+    "atoms-button": (isActive) =>
+      cheapCollision(data, circleLayer, rowNum, w, r, isActive),
+    "color-button": (isActive) => capOverlay(isActive),
+
+    "current-use-button": (isActive) => currentUseOverlay(isActive),
+    "future-use-button": (isActive) =>
+      futureUseOverlay(w, data, rowNum, isActive),
+  };
+
+  // Attach listeners + toggle behavior
+  Object.keys(buttonActions).forEach((id) => {
+    const btn = document.getElementById(id);
+
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("selected");
+
+      const isActive = btn.classList.contains("selected");
+      console.log(id, "is now", isActive ? "ON" : "OFF");
+
+      // Call the correct function
+      buttonActions[id](isActive);
+    });
+  });
+}
+
+function filterElementary(isActive) {
+  if (isActive) {
+    //include in the data
+  }
+}
+function filterMiddle(isActive) {}
+function filterHigh(isActive) {}
+function filterToClose(isActive) {}
+
+function capOverlay(isActive) {
+  if (isActive) {
+    if (
+      document
+        .getElementById("current-use-button")
+        .classList.contains("selected")
+    ) {
+      document.getElementById("current-use-button").click();
+    }
+
+    d3.selectAll(".squares")
+      .attr("opacity", 0.7)
+      .attr("fill", (d) => {
+        return capScale(d.en_per);
+      });
+  } else {
+    d3.selectAll(".squares").attr("fill", "transparent");
+  }
+}
+function currentUseOverlay(isActive) {
+  if (isActive) {
+    if (
+      document.getElementById("color-button").classList.contains("selected")
+    ) {
+      document.getElementById("color-button").click();
+    }
+    d3.selectAll(".squares")
+      // .attr("opacity", 0.7)
+      .attr("fill", (d) => {
+        console.log(order[d.f_use]);
+        return futureUseColors[order[d.type]];
+      });
+  } else {
+    d3.selectAll(".squares").attr("fill", "transparent");
+  }
+}
+function ttOverlay(data, w, rowNum) {
+  console.log("ADDING TT OVERLAY");
+  // --- TOOLTIP OVERLAY RECTANGLES (top layer) ---
+  d3.selectAll(".overlay-squares").remove();
+
+  overlayLayer
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .selectAll(".overlay-squares")
+    .data(data)
+    .join("g")
+    .attr("class", "overlay-group")
+    .on("mouseenter", (event, d) => {})
+    .on("mousemove", (event, d) => {
+      console.log(event.srcElement);
+      console.log(d, lastSquare);
+      if (d == lastSquare) return;
+      if (d !== lastSquare) {
+        lastSquare = d;
+
+        tooltip.select("#tooltip-school").text(d.name);
+        d3.selectAll(".overlay-squares")
+          .attr("fill", "#f0f0f000")
+          .attr("stroke-width", 0);
+        d3.select(event.srcElement)
+          .attr("fill", "#ffffff36")
+          .attr("stroke", "#000000")
+          .attr("stroke-width", 3);
+      }
+      tooltip
+        .style("left", event.pageX + "px")
+        .style("top", event.pageY + "px")
+        .classed("hidden", false);
+    })
+    .on("mouseleave", () => {
+      lastSquare = null;
+      tooltip.classed("hidden", true);
+      d3.selectAll(".overlay-squares")
+        .attr("fill", "#f0f0f000")
+        .attr("stroke-width", 0);
+    });
+
+  d3.selectAll(".overlay-group")
+    .append("rect")
+    .attr("class", "overlay-squares")
+    .attr("width", w)
+    .attr("height", w)
+    .attr("fill", "transparent")
+    .attr("x", (d, i) => (i % rowNum) * w)
+    .attr("y", (d, i) => Math.floor(i / rowNum) * w);
+
+  const tooltip = d3.select("#tooltip");
+}
+
+function futureUseOverlay(w, data, rowNum, isActive) {
+  if (isActive) {
+    // 1. Define the polygon vertices
+    const polygonPoints = [
+      [0, w],
+      [w, w],
+      [w, 0],
+    ];
+
+    futureUseOverlayLayer
+      .attr("transform", `translate(${margin.left},${margin.top})`)
+      .selectAll(".triangles")
+      .data(data)
+      .join("path")
+      .attr("class", "triangles")
+      .attr(
+        "transform",
+        (d, i) =>
+          `translate(${(i % rowNum) * w},${Math.floor(i / rowNum) * w})`,
+      )
+
+      .attr("fill", (d, i) => futureUseColors[order[d.f_use]])
+      .attr("stroke", "black")
+      // .attr("stroke", (d) => (d.f_use == d.type ? "none" : "black"))
+      .attr("d", d3.line()(polygonPoints) + "Z") // "Z" closes the path
+      .attr("stroke-width", 0.3);
+  } else {
+    d3.selectAll(".triangles").remove();
+  }
+}
+
+function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
+  console.log(r, data, test, rowNum, w, r, isActive);
+  if (isActive) {
+    const allNodes = [];
+
+    data.forEach((d, i) => {
+      const numNodes = Math.floor(d.en_per * 100);
+
+      const cellX = (i % rowNum) * w;
+      const cellY = Math.floor(i / rowNum) * w;
+
+      const centerX = cellX + w / 2;
+      const centerY = cellY + w / 2;
+
+      for (let j = 0; j < numNodes; j++) {
+        const homeX = centerX + (Math.random() - 0.5) * w * 0.2;
+        const homeY = centerY + (Math.random() - 0.5) * w * 0.2;
+
+        allNodes.push({
+          x: homeX,
+          y: homeY,
+          vx: 0,
+          vy: 0,
+          cellX,
+          cellY,
+        });
+      }
+    });
+    const circles = circleLayer
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`)
+      .selectAll("circle")
+      .data(allNodes)
+      .join("circle")
+      .attr("r", r)
+      .attr("fill", "#503f3f")
+      .attr("class", "collision-circle");
+    const simulation = d3
+      .forceSimulation(allNodes)
+      // .alphaDecay(0.02)
+      .velocityDecay(0.6)
+      .force("x", d3.forceX((d) => d.cellX + w / 2).strength(0.01))
+      .force("y", d3.forceY((d) => d.cellY + w / 2).strength(0.01))
+      .force("collision", d3.forceCollide(r + 0.5))
+      .on("tick", ticked);
+    function ticked() {
+      circles
+        .attr("cx", (d) => {
+          //  damp velocity EVERY frame
+          d.vx *= 0.92;
+
+          if (d.x < d.cellX + r || d.x > d.cellX + w - r) {
+            d.vx *= -0.8;
+          }
+          d.x = Math.max(d.cellX + r, Math.min(d.cellX + w - r, d.x));
+          return d.x;
+        })
+        .attr("cy", (d) => {
+          d.vy *= 0.92;
+
+          if (d.y < d.cellY + r || d.y > d.cellY + w - r) {
+            d.vy *= -0.8;
+          }
+          d.y = Math.max(d.cellY + r, Math.min(d.cellY + w - r, d.y));
+          return d.y;
+        });
+      //ok so this is when it STOPS, the lower the alpha, the more "settled"
+      // if (simulation.alpha() < 0.5) {
+      //   simulation.stop();
+      // }
+    }
+  } else {
+    d3.selectAll(".collision-circle").remove();
+  }
 }
