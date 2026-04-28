@@ -51,17 +51,17 @@
               <div class="button-group" id="high-button">
                 <p class="key-text">High</p>
               </div>
-              <div class="button-group" id="to-close-button">
+              <!-- <div class="button-group" id="to-close-button">
                 <p class="key-text">To Close</p>
-              </div>
+              </div> -->
             </div>
             <div class="filters">
-              <p class="key-header">CAPACITY</p>
+              <p class="key-header">STUDENT POPULATION</p>
               <div class="button-group" id="atoms-button">
-                <p class="key-text">Atoms</p>
+                <p class="key-text">Capacity Percentage</p>
               </div>
               <div class="button-group" id="color-button">
-                <p class="key-text">Color</p>
+                <p class="key-text">Total Enrollment</p>
               </div>
             </div>
             <div class="filters">
@@ -77,9 +77,22 @@
           <div id="vis-test">
             <div id="vis-test"></div>
           </div>
-          <div class="fact-sheet">
-            <h3>Fact Sheet</h3>
-            <p>lorem ipsum</p>
+          <div class="fact-sheet" id="right-bar">
+            <h2 class="map-header">DeKalb County Boundary</h2>
+            <div id="map-vis"></div>
+            <div class="map-buttons">
+              <div class="map-filters">
+                <div class="button-group map-button-group" id="capacity-button">
+                  <p class="key-text map-text">Capacity</p>
+                </div>
+                <div
+                  class="button-group map-button-group"
+                  id="current-use-map-button"
+                >
+                  <p class="key-text map-text">Current Use</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="main-story">
@@ -143,6 +156,9 @@
             <svg id="viz" width="1200" height="800"></svg>
             <div id="tooltip" class="hidden tooltip">
               <p id="tooltip-school"></p>
+            </div>
+            <div id="tooltip2" class="hidden tooltip">
+              <p id="tooltip2-school"></p>
             </div>
           </div>
         </div>

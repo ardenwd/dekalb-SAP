@@ -1,12 +1,13 @@
-var svg = d3.select("#vis").append("svg").attr("id", "svg");
+var svg = d3.select("#map-vis").append("svg").attr("id", "svg");
 
 const margin = { top: 40, right: 40, bottom: 50, left: 40 };
-var width =
-  document.getElementById("svg").clientWidth - margin.left - margin.right;
-var height =
-  document.getElementById("svg").clientWidth - margin.top - margin.bottom;
+const mapMargin = { top: 80, right: 10, bottom: 10, left: 10 };
+var width = document.getElementById("map-vis").clientWidth;
+var height = document.getElementById("map-vis").clientHeight - mapMargin.top;
 
+console.log("height", height);
 svg.attr("height", height).attr("width", width);
+// svg.attr("margin-top", "");
 
 var lastSquare = null;
 //scale for lat and long
@@ -34,93 +35,66 @@ const capColors = [
 //blue, white, red
 var vis = svg.append("g");
 const schoolsData = [];
+//array with each of the filtered types
+var typesMap;
+
+const boundaryLayer = svg.append("g").attr("class", "boundary-layer");
+const dotsLayer = svg.append("g").attr("class", "dots-layer");
 
 d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
-  console.log(data);
   data.sort((a, b) => d3.ascending(a.name, b.name));
 
-  var schoolsByType = data.sort((a, b) =>
-    d3.ascending(order[a.type], order[b.type]),
-  );
-  schoolsByType = d3.group(schoolsByType, (d) => d.type);
+  var schools = data.sort((a, b) => d3.ascending(order[a.type], order[b.type]));
+  var schoolsByType = d3.group(schools, (d) => d.type);
+  typesMap = {
+    Elementary: schoolsByType.get("Elementary"),
+    Middle: schoolsByType.get("Middle"),
+    High: schoolsByType.get("High"),
+    All: data,
+  };
+
   lScale = d3
     .scaleLinear()
     .domain(d3.extent(data, (d) => d.lat))
-    .range([0, height]);
+    .range([0, height - 140]);
+
+  const [min, max] = d3.extent(data, (d) => d.enrollment);
+  const mid = (min + max) / 2;
 
   capScale = d3
     .scaleDiverging()
-    .domain([0.3, 1.0, 1.7])
-    .interpolator(d3.interpolateRdBu);
+    .domain([min, mid, max])
+    .interpolator(d3.interpolateBlues);
 
-  var controller = new ScrollMagic.Controller();
+  console.log(
+    "Enrollment extent:",
+    d3.extent(data, (d) => d.enrollment),
+  );
+
+  console.log("Scale domain:", capScale.domain());
+
+  console.log("Test low value:", capScale(capScale.domain()[0]));
+  console.log(
+    "Test mid value:",
+    capScale((capScale.domain()[0] + capScale.domain()[1]) / 2),
+  );
+  console.log("Test high value:", capScale(capScale.domain()[1]));
 
   removeAll();
   // schoolsVis(schoolsByType);
   // typeVis(schoolsByType);
   // makeKey();
-  initCircles(schoolsByType);
+  drawDeKalbBoundary();
+  initCircles(schools);
   drawSchoolsOnMap(0);
   colorsByCapacity(0);
 
   dataTest(data);
-  // gradientKey(test);
-  var schoolsMapScene = new ScrollMagic.Scene({
-    triggerElement: "#vis-wrapper",
-    triggerHook: 0,
-    // duration: "100%"0,
-    // pushFollowers: false,
-  })
-    .setPin("#vis-wrapper")
-    .addTo(controller);
-
-  schoolsMapScene.on("enter", function () {
-    console.log("start schools Map");
-    colorsByCapacity(600);
-    // schoolsNoColor(schoolsByType);
-    // schoolsVis(schoolsByType);
-  });
-
-  schoolsMapScene.on("leave", function () {
-    console.log("leave schools Map ");
-    colorsByCapacity(600);
-    // removeAll();
-  });
-
-  var typeScene = new ScrollMagic.Scene({
-    triggerElement: "#typeVis",
-    triggerHook: 0.9,
-    duration: 200,
-  }).addTo(controller);
-
-  typeScene.on("enter", function () {
-    console.log("start");
-
-    removeKey();
-    schoolsByColor(600);
-  });
-
-  typeScene.on("leave", function () {
-    console.log("leave type scene");
-    // removeAll();
-  });
-  var repurposeScene = new ScrollMagic.Scene({
-    triggerElement: "#repurposeVis",
-    triggerHook: 0.9,
-    duration: 200,
-  }).addTo(controller);
-
-  repurposeScene.on("enter", function () {
-    console.log("start");
-    removeKey();
-    repurposeVis(0);
-  });
-
-  repurposeScene.on("leave", function () {
-    console.log("leave repurpose scene");
-    // removeAll();
-  });
+  originalData = data;
 });
+
+// const schoolLookup = new Map();
+// originalData.forEach((d) => schoolLookup.set(d.name, d));
 
 function dataProcess(d) {
   return {
@@ -129,6 +103,7 @@ function dataProcess(d) {
     lon: +d.LON,
     type: d.Type,
     en_per: +(d.Enrollment / d.Capacity),
+    enrollment: +d.Enrollment,
     f_use: d.future_use,
   };
 }
@@ -136,20 +111,22 @@ function dataProcess(d) {
 //draw map
 function drawDeKalbBoundary() {
   d3.json("dekalb-boundary.geojson").then(function (data) {
-    const projection = d3.geoMercator().fitSize([width, height], data);
+    const projection = d3
+      .geoMercator()
+      .fitSize([width * 0.95, height * 0.95], data);
 
     const path = d3.geoPath().projection(projection);
 
-    svg
-      .append("g")
+    boundaryLayer
+      .attr("transform", `translate(0,-30)`)
       .selectAll("path")
       .data(data.features)
       .enter()
       .append("path")
       .attr("d", path)
-      .attr("fill", "#69b3a2")
+      .attr("fill", "#ecd1de")
       .attr("opacity", 0.6)
-      .attr("stroke", "#3e645b")
+      .attr("stroke", "#8d537b")
       .attr("stroke-width", 2);
   });
   return 0;
@@ -164,12 +141,12 @@ function schoolsByColor(tDuration) {
     .selectAll(".dots")
     .transition()
     .duration(tDuration)
-    .attr("opacity", 0.8)
+    .attr("opacity", 1)
     .attr("fill", (d) => {
       return typeColors[order[d.type]];
     });
 
-  makeKey(0);
+  // makeKey(0);
 }
 
 function drawSchoolsOnMap(tDuration) {
@@ -180,31 +157,47 @@ function drawSchoolsOnMap(tDuration) {
     .attr("cx", (d) => lScale(d.lon + 118.05))
     //118.05 is the avg difference between the lat and lon
     .attr("cy", (d) => -lScale(d.lat) + height)
-    .attr("r", 10);
+    .attr("r", 3);
 }
 
 function initCircles(data) {
-  drawGroup(data.get("High"));
-  drawGroup(data.get("Middle"));
-  drawGroup(data.get("Elementary"));
+  dotsLayer
+    .attr("transform", `translate(-50,-104)`)
+    .selectAll(".dots")
+    .data(data)
+    .join("circle")
+    .attr("class", "dots")
+    .on("mousemove", (event, d) => {
+      const name = d.name;
+      tooltip
+        .style("left", event.pageX + "px")
+        .style("top", event.pageY + "px")
+        .classed("hidden", false);
+      tooltip.select("#tooltip-school").text(name);
 
-  function drawGroup(data) {
-    svg
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`)
-      .selectAll(".dots")
-      .data(data)
-      .join("circle")
-      .attr("class", "dots")
-      .on("mousemove", (event, d) => {
-        tooltip
-          .style("left", event.pageX + "px")
-          .style("top", event.pageY + "px")
-          .classed("hidden", false);
-        tooltip.select("#tooltip-school").text(d.name);
-      })
-      .on("mouseout", () => tooltip.classed("hidden", true));
-  }
+      //if the other name is present then make that square light up
+      //check names:
+      // d.name ==
+      d3.selectAll(".overlay-squares").each(function (d, i) {
+        if (d.name == name) {
+          var arr = d3.selectAll(".squares");
+          console.log(d.name);
+
+          const t = d3.select(this);
+          console.log(t);
+          t.attr("fill", "#ffffff36")
+            .attr("stroke", "#000000")
+            .attr("stroke-width", 3);
+        }
+      });
+    })
+    .on("mouseout", () => {
+      tooltip.classed("hidden", true);
+      d3.selectAll(".overlay-squares")
+        .attr("fill", "#f0f0f000")
+        .attr("stroke-width", 0);
+    });
+
   const tooltip = d3.select("#tooltip");
 }
 
@@ -213,11 +206,11 @@ function colorsByCapacity() {
     .selectAll(".dots")
     // .transition()
     // .duration(tDuration)
-    .attr("opacity", 0.8)
+    .attr("opacity", 1)
     .attr("fill", (d) => {
-      return capScale(d.en_per);
+      return capScale(d.enrollment);
     });
-  gradientKey(svg);
+  // gradientKey(svg);
 }
 
 function schoolsVis(data) {
@@ -254,19 +247,6 @@ function schoolsVis(data) {
   //add tooltip
   const tooltip = d3.select("#tooltip");
   // drawDeKalbBoundary();
-}
-
-function changeColour(data) {
-  const r = 3;
-  const perRow = 9;
-  var temp = svg
-    .selectAll("circle")
-    .transition()
-    .duration(600)
-    .attr("fill", "pink")
-    .attr("cx", (d, i) => (i % perRow) * r * 3)
-    .attr("cy", (d, i) => Math.floor(i / perRow) * r * 3)
-    .attr("r", r);
 }
 
 function typeVis(data) {
@@ -396,6 +376,7 @@ function gradientKey(svg) {
     .append("linearGradient")
     .attr("id", "cap-gradient");
 
+  // ????
   // Sample the color scale across the domain
   const numStops = 10;
   d3.range(numStops + 1).forEach((i) => {
@@ -474,56 +455,50 @@ var test = d3
   .append("svg")
   .attr("id", "vis-test")
   .attr("height", 500)
-  .attr("width", 800);
+  .attr("width", 630);
 
 // Create layers in correct order
 const bgLayer = test.append("g").attr("class", "bg-layer");
-const circleLayer = test.append("g").attr("class", "circle-layer");
+
 const futureUseOverlayLayer = test
   .append("g")
   .attr("class", "future-use-overlay-layer");
+const circleLayer = test.append("g").attr("class", "circle-layer");
 const overlayLayer = test.append("g").attr("class", "overlay-layer");
+const w = 46;
+const rowNum = 12;
+const r = 2;
+var activeTypes = new Set();
+var buttonActions;
+var filteredData;
 
 function dataTest(data) {
-  const w = 46;
-  const rowNum = 12;
-  const r = 2;
+  // Keep original data safe
+  const originalData = data;
+  filteredData = data;
+  buttons();
+  // Draw initial squares
+  drawSquares(filteredData);
+}
 
-  // --- BACKGROUND SQUARES ---
-  bgLayer
-    .attr("transform", `translate(${margin.left},${margin.top})`)
-    .selectAll(".squares")
-    .data(data)
-    .join("rect")
-    .attr("class", "squares")
-    .attr("width", w)
-    .attr("height", w)
-    .attr("fill", "#f0f0f000")
-    .attr("stroke", "black")
-    .attr("stroke-width", 1)
-    .attr("x", (d, i) => (i % rowNum) * w)
-    .attr("y", (d, i) => Math.floor(i / rowNum) * w);
-
-  // --- CIRCLES (middle layer) ---
-  // cheapCollision(data, circleLayer, rowNum, w, r);
-
-  ttOverlay(data, w, rowNum);
+function buttons() {
   // ---BUTTONS---
 
   // Map button IDs to their specific functions
-  const buttonActions = {
+  buttonActions = {
     "elementary-button": (isActive) => filterElementary(isActive),
     "middle-button": (isActive) => filterMiddle(isActive),
     "high-button": (isActive) => filterHigh(isActive),
-    "to-close-button": (isActive) => filterToClose(isActive),
+    // "to-close-button": (isActive) => filterToClose(isActive),
 
     "atoms-button": (isActive) =>
-      cheapCollision(data, circleLayer, rowNum, w, r, isActive),
+      cheapCollision(filteredData, circleLayer, rowNum, w, r, isActive),
     "color-button": (isActive) => capOverlay(isActive),
 
-    "current-use-button": (isActive) => currentUseOverlay(isActive),
+    "current-use-button": (isActive) =>
+      currentUseOverlay(filteredData, isActive),
     "future-use-button": (isActive) =>
-      futureUseOverlay(w, data, rowNum, isActive),
+      futureUseOverlay(w, filteredData, rowNum, isActive),
   };
 
   // Attach listeners + toggle behavior
@@ -540,15 +515,116 @@ function dataTest(data) {
       buttonActions[id](isActive);
     });
   });
+
+  // --- DEFAULT ACTIVE BUTTONS ---
+  const defaults = [
+    "elementary-button",
+    "middle-button",
+    "high-button",
+    "atoms-button",
+  ];
+
+  defaults.forEach((id) => {
+    const btn = document.getElementById(id);
+    btn.classList.add("selected");
+    buttonActions[id](true);
+  });
+}
+
+function applyFilters() {
+  console.log("apply filters");
+  const selected = [...activeTypes];
+
+  const result =
+    selected.length === 0
+      ? typesMap.All
+      : selected.flatMap((type) => typesMap[type] || []);
+  filteredData = result;
+  drawSquares(result);
+  //apply reload of
+}
+
+function drawSquares(data) {
+  const squares = bgLayer
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .selectAll(".squares")
+    .data(data, (d) => d.id);
+
+  squares.join(
+    (enter) =>
+      enter
+        .append("rect")
+        .attr("class", "squares")
+        .attr("width", w)
+        .attr("height", w)
+        .attr("fill", "#f0f0f000")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("x", (d, i) => (i % rowNum) * w)
+        .attr("y", (d, i) => Math.floor(i / rowNum) * w),
+
+    (update) => update,
+
+    (exit) => exit.remove(),
+  );
+
+  //need to fix the overlays!
+  ttOverlay(data, w, rowNum);
+  // --- resync all active buttons ---
+  resyncAllButtons();
+}
+
+// Helper: loop through all buttons and re-run their logic
+function resyncAllButtons() {
+  Object.keys(buttonActions).forEach((id) => {
+    const btn = document.getElementById(id);
+    const isActive = btn.classList.contains("selected");
+    if (isOverlayButton(id)) {
+      buttonActions[id](isActive);
+    }
+  });
+}
+//Helper: see if its an overlay, not a filter!
+function isOverlayButton(id) {
+  return (
+    id === "atoms-button" ||
+    id === "color-button" ||
+    id === "current-use-button" ||
+    id === "future-use-button"
+  );
 }
 
 function filterElementary(isActive) {
   if (isActive) {
-    //include in the data
+    activeTypes.add("Elementary");
+  } else {
+    activeTypes.delete("Elementary");
   }
+
+  applyFilters();
+  //include in the data
 }
-function filterMiddle(isActive) {}
-function filterHigh(isActive) {}
+
+function filterMiddle(isActive) {
+  if (isActive) {
+    activeTypes.add("Middle");
+  } else {
+    activeTypes.delete("Middle");
+  }
+
+  applyFilters();
+  //include in the data
+}
+function filterHigh(isActive) {
+  if (isActive) {
+    activeTypes.add("High");
+  } else {
+    activeTypes.delete("High");
+  }
+
+  applyFilters();
+  //include in the data
+}
 function filterToClose(isActive) {}
 
 function capOverlay(isActive) {
@@ -564,49 +640,60 @@ function capOverlay(isActive) {
     d3.selectAll(".squares")
       .attr("opacity", 0.7)
       .attr("fill", (d) => {
-        return capScale(d.en_per);
+        return capScale(d.enrollment);
       });
   } else {
     d3.selectAll(".squares").attr("fill", "transparent");
   }
 }
-function currentUseOverlay(isActive) {
+
+function currentUseOverlay(data, isActive) {
   if (isActive) {
-    if (
-      document.getElementById("color-button").classList.contains("selected")
-    ) {
-      document.getElementById("color-button").click();
-    }
-    d3.selectAll(".squares")
-      // .attr("opacity", 0.7)
-      .attr("fill", (d) => {
-        console.log(order[d.f_use]);
-        return futureUseColors[order[d.type]];
-      });
+    // 1. Define the polygon vertices
+    const polygonPoints = [
+      [0, w],
+      [0, 0],
+      [w, 0],
+    ];
+
+    futureUseOverlayLayer
+      .attr("transform", `translate(${margin.left},${margin.top})`)
+      .selectAll(".triangles-current")
+      .data(data)
+      .join("path")
+      .attr("class", "triangles-current")
+      .attr(
+        "transform",
+        (d, i) =>
+          `translate(${(i % rowNum) * w},${Math.floor(i / rowNum) * w})`,
+      )
+
+      .attr("fill", (d, i) => futureUseColors[order[d.type]])
+      .attr("stroke", "black")
+      // .attr("stroke", (d) => (d.f_use == d.type ? "none" : "black"))
+      .attr("d", d3.line()(polygonPoints) + "Z") // "Z" closes the path
+      .attr("stroke-width", 0.3);
   } else {
-    d3.selectAll(".squares").attr("fill", "transparent");
+    d3.selectAll(".triangles-current").remove();
   }
 }
 function ttOverlay(data, w, rowNum) {
-  console.log("ADDING TT OVERLAY");
   // --- TOOLTIP OVERLAY RECTANGLES (top layer) ---
-  d3.selectAll(".overlay-squares").remove();
+  d3.selectAll(".overlay-group").remove();
 
   overlayLayer
     .attr("transform", `translate(${margin.left},${margin.top})`)
-    .selectAll(".overlay-squares")
+    .selectAll(".overlay-group")
     .data(data)
     .join("g")
     .attr("class", "overlay-group")
     .on("mouseenter", (event, d) => {})
     .on("mousemove", (event, d) => {
-      console.log(event.srcElement);
-      console.log(d, lastSquare);
       if (d == lastSquare) return;
       if (d !== lastSquare) {
         lastSquare = d;
 
-        tooltip.select("#tooltip-school").text(d.name);
+        tooltip2.select("#tooltip2-school").text(d.name);
         d3.selectAll(".overlay-squares")
           .attr("fill", "#f0f0f000")
           .attr("stroke-width", 0);
@@ -615,14 +702,14 @@ function ttOverlay(data, w, rowNum) {
           .attr("stroke", "#000000")
           .attr("stroke-width", 3);
       }
-      tooltip
+      tooltip2
         .style("left", event.pageX + "px")
         .style("top", event.pageY + "px")
         .classed("hidden", false);
     })
     .on("mouseleave", () => {
       lastSquare = null;
-      tooltip.classed("hidden", true);
+      tooltip2.classed("hidden", true);
       d3.selectAll(".overlay-squares")
         .attr("fill", "#f0f0f000")
         .attr("stroke-width", 0);
@@ -637,7 +724,7 @@ function ttOverlay(data, w, rowNum) {
     .attr("x", (d, i) => (i % rowNum) * w)
     .attr("y", (d, i) => Math.floor(i / rowNum) * w);
 
-  const tooltip = d3.select("#tooltip");
+  const tooltip2 = d3.select("#tooltip2");
 }
 
 function futureUseOverlay(w, data, rowNum, isActive) {
@@ -672,7 +759,8 @@ function futureUseOverlay(w, data, rowNum, isActive) {
 }
 
 function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
-  console.log(r, data, test, rowNum, w, r, isActive);
+  d3.selectAll(".collision-circle").remove();
+  d3.selectAll(".atoms-group").remove();
   if (isActive) {
     const allNodes = [];
 
@@ -701,6 +789,7 @@ function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
     });
     const circles = circleLayer
       .append("g")
+      .attr("class", "atoms-group")
       .attr("transform", `translate(${margin.left},${margin.top})`)
       .selectAll("circle")
       .data(allNodes)
@@ -742,7 +831,5 @@ function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
       //   simulation.stop();
       // }
     }
-  } else {
-    d3.selectAll(".collision-circle").remove();
   }
 }
