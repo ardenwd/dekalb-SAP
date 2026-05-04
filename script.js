@@ -240,7 +240,7 @@ function schoolsVis(data) {
           .style("left", event.pageX + "px")
           .style("top", event.pageY + "px")
           .classed("hidden", false);
-        tooltip.select("#tooltip-school").text(d.name);
+        tooltip.text(d.name);
       })
       .on("mouseout", () => tooltip.classed("hidden", true));
   }
@@ -693,7 +693,7 @@ function ttOverlay(data, w, rowNum) {
       if (d !== lastSquare) {
         lastSquare = d;
 
-        tooltip2.select("#tooltip2-school").text(d.name);
+        tooltip2.text(d.name);
         d3.selectAll(".overlay-squares")
           .attr("fill", "#f0f0f000")
           .attr("stroke-width", 0);
