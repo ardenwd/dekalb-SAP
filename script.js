@@ -58,12 +58,12 @@ d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
     .domain(d3.extent(data, (d) => d.lat))
     .range([0, height - 140]);
 
-  const [min, max] = d3.extent(data, (d) => d.enrollment);
-  const mid = (min + max) / 2;
-
+  const max = d3.max(data, (d) => d.enrollment);
+  const mid = (0 + max) / 2;
+  console.log("max is", max);
   capScale = d3
     .scaleDiverging()
-    .domain([min, mid, max])
+    .domain([0, mid, max])
     .interpolator(d3.interpolateBlues);
 
   console.log(
@@ -833,3 +833,69 @@ function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
     }
   }
 }
+
+const wr = 80;
+const hr = 10;
+
+const br = d3
+  .select("#blue-rect")
+  .append("svg")
+  .attr("width", wr + 6)
+  .attr("height", hr + 20);
+
+// define gradient
+const grDefs = br.append("defs");
+
+const gradient = grDefs
+  .append("linearGradient")
+  .attr("id", "blueGrad")
+  .attr("x1", "0%")
+  .attr("x2", "100%")
+  .attr("y1", "0%")
+  .attr("y2", "0%");
+
+// add stops using interpolateBlues
+gradient
+  .append("stop")
+  .attr("offset", "0%")
+  .attr("stop-color", d3.interpolateBlues(0));
+
+gradient
+  .append("stop")
+  .attr("offset", "100%")
+  .attr("stop-color", d3.interpolateBlues(1));
+// draw the rect
+br.append("rect")
+  .attr("width", wr)
+  .attr("height", hr)
+  .attr("fill", "url(#blueGrad)")
+  .attr("transform", `translate(3, 0)`);
+
+// scale for the number line
+const brScale = d3
+  .scaleLinear()
+  .domain([0, 2224])
+  .range([0, wr + 6]);
+
+// small ticks (example: 0, 1000, 2000)
+const brAxis = d3.axisBottom(brScale).tickValues([0, 2000]).tickSize(3);
+
+// place axis just *below* the bar
+const axisBr = br
+  .append("g")
+  .attr("transform", `translate(5.1, 12)`)
+  .call(brAxis);
+
+// style text
+axisBr
+  .selectAll("text")
+  .attr("fill", "#4e3f3e")
+  .attr("font-family", "Hedvig Letters Serif")
+  .attr("font-size", 10)
+  .attr("dy", "1em");
+
+// style tick lines
+axisBr.selectAll(".tick line").attr("stroke", "#4e3f3e");
+
+// remove main axis line
+axisBr.select(".domain").remove();

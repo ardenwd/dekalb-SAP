@@ -184,6 +184,7 @@ svg {
   gap: 2rem;
   align-items: center;
   margin: auto;
+  margin: 0;
   width: 100%;
 }
 
@@ -195,12 +196,126 @@ svg {
 .key-header {
   font-family: "Hedvig Letters Serif";
   font-weight: 400;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   opacity: 1;
   color: #4e3f3e;
   text-align: center;
-  padding: 1rem 0 0.5rem 0;
+  padding: 1rem 0 0 0;
   margin: 0;
+  padding-left: 2px;
+  position: relative;
+}
+
+.information {
+  position: absolute;
+  top: 1.2rem; /* stick to the top line */
+  left: 0.2rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #333;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.information-box {
+  width: 120px;
+  position: absolute;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px;
+  padding: 0.1rem;
+  padding-bottom: 1rem;
+  margin-top: 0px;
+  left: 120px;
+  font-family: "Hedvig Letters Serif";
+}
+
+#enrollment-information-box {
+  padding-bottom: 0.6rem;
+}
+
+.info-header {
+  font-family: "Hedvig Letters Serif";
+  color: #4e3f3e;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.total-en-header {
+  font-size: 0.7rem;
+  padding: 0.8rem 0.4rem 0rem;
+}
+
+#info-circles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 120px;
+}
+
+.info-percents-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.info-percents {
+  font-family: "Hedvig Letters Serif";
+  font-size: 0.6rem;
+  font-weight: 300;
+  color: #4e3f3e;
+}
+
+.dots-pics {
+  width: 30px;
+  height: auto;
+  object-fit: contain;
+}
+
+#blue-rect {
+  margin-left: 20px;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* spacing between items */
+  padding-left: 20px;
+}
+
+.info-square {
+  width: 1rem;
+  height: 1rem;
+  background: transparent;
+  border: 1px solid #4e3f3e;
+  flex-shrink: 0; /* prevents the square from shrinking */
+  box-sizing: border-box;
+}
+
+#future-use-square::after {
+  content: "";
+  position: relative;
+  bottom: 13.5px;
+  right: 0.5px;
+  width: 0;
+  height: 0;
+  /* triangle made from borders */
+  border-bottom: 0.98rem solid #4e3f3e;
+  border-left: 0.98rem solid transparent;
+}
+
+.info-list-item {
+  font-size: 0.6rem;
+  color: #4e3f3e;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* space between square and text */
 }
 
 .map-key-header {
@@ -209,7 +324,7 @@ svg {
 }
 
 .button-group {
-  border: 1px solid #D4C9C8;
+  border: 1px solid #d0d0d0;
   border-radius: 30px;
   padding: 0.1rem;
   margin: 0.5rem 0.4rem;
@@ -229,7 +344,7 @@ svg {
 }
 
 .key-text {
-  color: #918382;
+  color: #6a6969;
   font-family: Inter;
   font-weight: Regular;
   text-align: center;
@@ -285,6 +400,16 @@ svg {
   body {
     margin: 0% 5%;
   }
+}
+.small-break {
+  padding-top: 2rem;
+}
+
+.gray-line {
+  margin: 10px;
+  height: 0.2px;
+  width: 80%;
+  background-color: #d0d0d0;
 }
 
 /*# sourceMappingURL=style.css.map */
