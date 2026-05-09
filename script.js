@@ -879,7 +879,7 @@ const hr = 10;
 const br = d3
   .select("#blue-rect")
   .append("svg")
-  .attr("width", wr + 6)
+  .attr("width", wr + 20)
   .attr("height", hr + 20);
 
 // define gradient
