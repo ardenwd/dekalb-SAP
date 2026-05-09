@@ -10,6 +10,8 @@ html {
   font-size: 16px;
   display: flex;
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 a {
@@ -23,7 +25,6 @@ a {
   font-size: 1.1rem;
   text-align: center;
   color: #4e3f3e;
-  width: 100%;
   background-color: #B1D1C7;
 }
 
@@ -35,7 +36,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 
 .main-story {
@@ -43,11 +46,13 @@ body {
 }
 
 .test-vis {
-  margin: 0% 0%;
+  margin: 0% 10%;
   display: flex;
   flex-direction: row;
+  width: 80%;
   height: 100%;
   justify-content: center;
+  gap: 2.4rem;
 }
 
 .title-container {
@@ -64,7 +69,7 @@ body {
   text-align: center;
   text-wrap: balance;
   margin-top: 4rem;
-  margin-bottom: 0;
+  margin-bottom: 2rem;
 }
 
 .subtitle {
@@ -139,7 +144,6 @@ p {
 }
 
 svg {
-  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -152,32 +156,45 @@ svg {
   padding-bottom: 0px;
 }
 
+#grid-vis {
+  max-width: 100%;
+  flex: 12;
+  min-width: 0px;
+}
+
 .side-bar {
   display: flex;
   flex-direction: column;
-  margin-top: 1.4rem;
-  overflow: hidden;
-  width: 10%;
+  overflow: visible;
+  flex: 4;
   align-items: center;
+  gap: 0.8rem;
+  position: relative;
 }
 
 .fact-sheet {
-  max-width: 20%;
+  flex: 6;
+}
+
+.grid-side {
+  margin: 0;
+  padding-top: 2rem;
 }
 
 #map-vis {
-  width: 100%;
+  min-width: 0;
   height: 100%;
-  viewbox: 0 0 20 10;
   margin: 0px 0 0 0;
 }
 
 .map-header {
+  text-align: center;
+  width: 80%;
+  font-size: 1.2rem;
   font-family: "Hedvig Letters Serif";
-  font-size: 1.7rem;
   font-weight: 500;
-  padding-top: 2rem;
   color: #4e3f3e;
+  margin: 0;
 }
 
 .filters {
@@ -200,16 +217,14 @@ svg {
   opacity: 1;
   color: #4e3f3e;
   text-align: center;
-  padding: 1rem 0 0 0;
-  margin: 0;
-  padding-left: 2px;
+  margin: 0 0.8rem;
   position: relative;
 }
 
 .information {
   position: absolute;
-  top: 1.2rem; /* stick to the top line */
-  left: 0.2rem;
+  top: 0.2rem; /* stick to the top line */
+  left: -0.4rem;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -220,6 +235,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .information-box {
@@ -229,9 +245,10 @@ svg {
   border-radius: 20px;
   padding: 0.1rem;
   padding-bottom: 1rem;
-  margin-top: 0px;
-  left: 120px;
+  margin-top: -40px;
+  left: -110px;
   font-family: "Hedvig Letters Serif";
+  background-color: white;
 }
 
 #enrollment-information-box {

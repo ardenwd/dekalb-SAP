@@ -29,6 +29,8 @@ html {
 	font-size: 16px;
 	display: flex;
 	height: 100%;
+	width: 100%;
+	overflow-x: hidden;
 }
 a {
 	text-decoration: none;
@@ -40,7 +42,7 @@ a {
 	font-size: 1.1rem;
 	text-align: center;
 	color: $coffee;
-	width: 100%;
+	// width: 100%;
 	background-color: $robins-egg;
 }
 .serif {
@@ -50,17 +52,21 @@ body {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+	width: 100%;
 	margin: 0;
-}
+	overflow-x: hidden;
+	}
 .main-story {
 	margin: 0% 25%;
 }
 .test-vis {
-	margin: 0% 0%;
+	margin: 0% 10%;
 	display: flex;
 	flex-direction: row;
+	width: calc(100% - 20%);
 	height: 100%;
 	justify-content: center;
+	gap:2.4rem;
 }
 .title-container {
 	padding: 1rem 0 4rem 0;
@@ -76,7 +82,7 @@ body {
 	text-align: center;
 	text-wrap: balance;
     margin-top: 4rem;
-    margin-bottom: 0;
+    margin-bottom: 2rem;
 }
 .subtitle {
 	line-height: 1.3rem;
@@ -139,39 +145,65 @@ p {
 	padding-top: 40px;
 }
 svg {
-	width: 100%;
+	// width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
+
 .section {
 	padding-bottom: 80%;
 }
 .section.first {
 	padding-bottom: 0px;
 }
+
+#grid-vis{
+	max-width: 100%;
+	// width: 100%;
+	flex: 12;
+	min-width: 0px;
+// viewbox: 0 0 20 10;
+}
+
+
 .side-bar {
 	display: flex;
 	flex-direction: column;
-	margin-top: 1.4rem;
-	overflow: hidden;
-	width: 10%;
+	// padding-top: 1.4rem;
+	overflow: visible;
+	flex: 4;
 	align-items: center;
+	gap: 0.8rem;
+	position: relative;
 }
 .fact-sheet {
-	max-width: 20%;
+	// max-width: 10%;
+	// width: 30%;
+	flex: 6;
+}
+
+.grid-side{
+	// border: 0.5px solid black;
+	margin: 0;
+	padding-top: 2rem;
+	// width: 20%;
 }
 #map-vis {
-	width: 100%;
+	min-width: 0;
 	height: 100%;
-	viewbox: 0 0 20 10;
+	// viewbox: 0 0 20 10;
 	margin: 0px 0 0 0;
 }
 .map-header {
+	text-align: center;
+    width: 80%;
+    font-size: 1.2rem;
     font-family: $hedvig;
-	font-size: 1.7rem;
+
 	font-weight: 500;
-	padding-top: 2rem;
+	// padding-top: 4rem;
     color: $coffee;
+	margin: 0;
 }
 .filters {
 	gap: 2rem;
@@ -191,16 +223,17 @@ svg {
 	opacity: 1;
 	color: $coffee;
 	text-align: center;
-	padding: 1rem 0  0 0;
-	margin: 0;
-    padding-left: 2px;
+	// padding: 1rem 0  0 0;
+	// margin: 0;
+    // padding-left: 2px;
+	margin: 0 .8rem;
   position: relative;
 }
 
 .information {
   position: absolute;
-  top: 1.2rem;          /* stick to the top line */
-  left: .2rem;
+  top: 0.2rem;          /* stick to the top line */
+  left: -0.4rem;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -211,6 +244,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .information-box{
@@ -222,8 +256,11 @@ svg {
 	border-radius: 20px;
 	padding: 0.1rem;
     padding-bottom: 1rem;
-    margin-top: 0px;
-    left: 120px;  font-family: $hedvig;
+    margin-top: -40px;
+    left: -110px; 
+	font-family: $hedvig;
+	background-color: white;
+
 
 }
 

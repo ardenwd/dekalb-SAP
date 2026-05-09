@@ -45,9 +45,30 @@
           DeKalb County Schools at a Glance
         </h1>
         <div class="test-vis">
-          <div class="side-bar">
+          <div class="side-bar grid-side">
             <div class="filters">
-              <div class="information-box" id="enrollment-information-box">
+              <p class="key-header">
+                <!-- <span class="information" id="school-type-info">i</span> -->
+                School Type
+              </p>
+              <div class="button-group" id="elementary-button">
+                <p class="key-text">Elementary</p>
+              </div>
+              <div class="button-group" id="middle-button">
+                <p class="key-text">Middle</p>
+              </div>
+              <div class="button-group" id="high-button">
+                <p class="key-text">High</p>
+              </div>
+              <!-- <div class="button-group" id="to-close-button">
+                <p class="key-text">To Close</p>
+              </div> -->
+            </div>
+            <div class="filters">
+              <div
+                class="information-box hidden"
+                id="enrollment-information-box"
+              >
                 <p class="info-header" id="info-animation-header">
                   Percent Capacity by School
                 </p>
@@ -67,27 +88,6 @@
                 <div></div>
               </div>
               <p class="key-header">
-                <span class="information" id="school-type-info">i</span>School
-                Type
-              </p>
-              <div class="button-group" id="elementary-button">
-                <p class="key-text">Elementary</p>
-              </div>
-              <div class="button-group" id="middle-button">
-                <p class="key-text">Middle</p>
-              </div>
-              <div class="button-group" id="high-button">
-                <p class="key-text">High</p>
-              </div>
-              <!-- <div class="button-group" id="to-close-button">
-                <p class="key-text">To Close</p>
-              </div> -->
-            </div>
-            <div class="filters">
-              <!-- <div class="information-box" id="student-population-info-box">
-           
-              </div> -->
-              <p class="key-header">
                 <span class="information" id="student-population-info">i</span
                 >Student Population
               </p>
@@ -99,7 +99,10 @@
               </div>
             </div>
             <div class="filters">
-              <div class="information-box" id="facility-use-information-box">
+              <div
+                class="information-box hidden"
+                id="facility-use-information-box"
+              >
                 <p class="info-header">Type of School</p>
                 <div class="info-list">
                   <div class="info-list-item">
@@ -149,13 +152,11 @@
               </div>
             </div>
           </div>
-          <div id="vis-test">
-            <div id="vis-test"></div>
-          </div>
-          <div class="fact-sheet" id="right-bar">
+          <div id="grid-vis"></div>
+          <div class="fact-sheet grid-side" id="right-bar">
             <h2 class="map-header">DeKalb County Boundary</h2>
             <div id="map-vis"></div>
-            <div class="map-buttons">
+            <!-- <div class="map-buttons">
               <div class="map-filters">
                 <div class="button-group map-button-group" id="capacity-button">
                   <p class="key-text map-text">Capacity</p>
@@ -167,7 +168,7 @@
                   <p class="key-text map-text">Current Use</p>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="main-story">

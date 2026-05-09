@@ -1,17 +1,17 @@
 var svg = d3.select("#map-vis").append("svg").attr("id", "svg");
+const coffee = "#4e3f3e";
+const margin = { top: 2, right: 2, bottom: 50, left: 2 };
+// const margin = { top: 0, right: 0, bottom: 0, left: 0 };
+var width = 100;
+var height = 150;
 
-const margin = { top: 40, right: 40, bottom: 50, left: 40 };
-const mapMargin = { top: 80, right: 10, bottom: 10, left: 10 };
-var width = document.getElementById("map-vis").clientWidth;
-var height = document.getElementById("map-vis").clientHeight - mapMargin.top;
-
-console.log("height", height);
-svg.attr("height", height).attr("width", width);
-// svg.attr("margin-top", "");
+svg.attr("viewBox", "0 0 100 150");
 
 var lastSquare = null;
 //scale for lat and long
 var lscale;
+var xScale;
+var yScale;
 
 //scale for capacity %
 var capScale;
@@ -40,7 +40,7 @@ var typesMap;
 
 const boundaryLayer = svg.append("g").attr("class", "boundary-layer");
 const dotsLayer = svg.append("g").attr("class", "dots-layer");
-
+const ldiff = 118.03;
 d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
   data.sort((a, b) => d3.ascending(a.name, b.name));
 
@@ -56,7 +56,16 @@ d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
   lScale = d3
     .scaleLinear()
     .domain(d3.extent(data, (d) => d.lat))
-    .range([0, height - 140]);
+    .range([0, height * 0.95]);
+
+  xScale = d3
+    .scaleLinear()
+    .domain(d3.extent(data, (d) => d.lon))
+    .range([6, width - 20]);
+  yScale = d3
+    .scaleLinear()
+    .domain(d3.extent(data, (d) => d.lat))
+    .range([height - 30, 18]); // invert for SVG
 
   const max = d3.max(data, (d) => d.enrollment);
   const mid = (0 + max) / 2;
@@ -118,7 +127,7 @@ function drawDeKalbBoundary() {
     const path = d3.geoPath().projection(projection);
 
     boundaryLayer
-      .attr("transform", `translate(0,-30)`)
+      .attr("transform", `translate(2,0)`)
       .selectAll("path")
       .data(data.features)
       .enter()
@@ -154,15 +163,28 @@ function drawSchoolsOnMap(tDuration) {
     .selectAll(".dots")
     .transition()
     .duration(tDuration)
-    .attr("cx", (d) => lScale(d.lon + 118.05))
+    .attr("cx", (d) => {
+      // console.log(
+      //   "actual: (",
+      //   d.lon,
+      //   ", ",
+      //   d.lat,
+      //   ") scaled: (",
+      //   xScale(d.lon),
+      //   ", ",
+      //   yScale(d.lat),
+      //   ")",
+      // );
+      return xScale(d.lon);
+    })
     //118.05 is the avg difference between the lat and lon
-    .attr("cy", (d) => -lScale(d.lat) + height)
-    .attr("r", 3);
+    .attr("cy", (d) => yScale(d.lat))
+    .attr("r", 2);
 }
 
 function initCircles(data) {
   dotsLayer
-    .attr("transform", `translate(-50,-104)`)
+    // .attr("transform", `translate(-50,-104)`)
     .selectAll(".dots")
     .data(data)
     .join("circle")
@@ -173,6 +195,10 @@ function initCircles(data) {
         .style("left", event.pageX + "px")
         .style("top", event.pageY + "px")
         .classed("hidden", false);
+
+      //make that specifc circle larger
+      d3.select(event.srcElement).attr("r", 3);
+
       tooltip.select("#tooltip-school").text(name);
 
       //if the other name is present then make that square light up
@@ -196,6 +222,7 @@ function initCircles(data) {
       d3.selectAll(".overlay-squares")
         .attr("fill", "#f0f0f000")
         .attr("stroke-width", 0);
+      d3.select(event.srcElement).attr("r", 2);
     });
 
   const tooltip = d3.select("#tooltip");
@@ -224,14 +251,13 @@ function schoolsVis(data) {
   function drawGroup(data, color) {
     svg
       .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`)
+      // .attr("transform", `translate(${margin.left},${margin.top})`)
       .selectAll(".dots")
       .data(data)
       .join("circle")
       .attr("class", "dots")
-      .attr("cx", (d) => lScale(d.lon + 118.05))
-      //118.05 is the avg difference between the lat and lon
-      .attr("cy", (d) => -lScale(d.lat) + height)
+      .attr("cx", (d) => xScale(d.lon))
+      .attr("cy", (d) => yScale(d.lat))
       .attr("r", 10)
       .attr("opacity", 0.7)
       .attr("fill", color)
@@ -258,7 +284,7 @@ function typeVis(data) {
   function drawGroup(data, tx, ty, r, perRow, color) {
     svg
       .append("g")
-      .attr("transform", `translate(${tx},${ty})`)
+      // .attr("transform", `translate(${tx},${ty})`)
       .selectAll("circle")
       .data(data)
       .join("circle")
@@ -320,10 +346,8 @@ function makeKey(visNum) {
       break;
   }
 
-  const key = svg
-    .append("g")
-    .attr("class", "key")
-    .attr("transform", `translate(${margin.left + width - 80}, ${margin.top})`);
+  const key = svg.append("g").attr("class", "key");
+  // .attr("transform", `translate(${margin.left + width - 80}, ${margin.top})`);
   key
     .append("text")
     .attr("x", 4)
@@ -387,10 +411,8 @@ function gradientKey(svg) {
       .attr("offset", `${t * 100}%`)
       .attr("stop-color", capScale(value));
   });
-  const key = svg
-    .append("g")
-    .attr("class", "key")
-    .attr("transform", `translate(${margin.left + width - 80}, ${margin.top})`);
+  const key = svg.append("g").attr("class", "key");
+  // .attr("transform", `translate(${margin.left + width - 80}, ${margin.top})`);
 
   key
     .append("text")
@@ -449,13 +471,18 @@ function removeKey() {
   d3.select(".key").remove();
 }
 
+// var gwidth = document.getElementById("grid-vis").clientWidth;
+// var gheight = document.getElementById("grid-vis").clientHeight - margin.top;
+
 //----TEST----
 var test = d3
-  .select("#vis-test")
+  .select("#grid-vis")
+
   .append("svg")
   .attr("id", "vis-test")
-  .attr("height", 500)
-  .attr("width", 630);
+  // .attr("height", "100%")
+  // .attr("width", "100%");
+  .attr("viewBox", `0 0 400 340`);
 
 // Create layers in correct order
 const bgLayer = test.append("g").attr("class", "bg-layer");
@@ -465,9 +492,9 @@ const futureUseOverlayLayer = test
   .attr("class", "future-use-overlay-layer");
 const circleLayer = test.append("g").attr("class", "circle-layer");
 const overlayLayer = test.append("g").attr("class", "overlay-layer");
-const w = 46;
+const w = 32;
 const rowNum = 12;
-const r = 2;
+const r = 1.3;
 var activeTypes = new Set();
 var buttonActions;
 var filteredData;
@@ -557,8 +584,8 @@ function drawSquares(data) {
         .attr("class", "squares")
         .attr("width", w)
         .attr("height", w)
-        .attr("fill", "#f0f0f000")
-        .attr("stroke", "black")
+        .attr("fill", coffee)
+        .attr("stroke", coffee)
         .attr("stroke-width", 1)
         .attr("x", (d, i) => (i % rowNum) * w)
         .attr("y", (d, i) => Math.floor(i / rowNum) * w),
@@ -706,6 +733,17 @@ function ttOverlay(data, w, rowNum) {
         .style("left", event.pageX + "px")
         .style("top", event.pageY + "px")
         .classed("hidden", false);
+
+      //make the corresponding dot on the map grow
+      const name = d.name;
+      d3.selectAll(".dots").each(function (d, i) {
+        if (d.name == name) {
+          console.log(d.name);
+
+          const t = d3.select(this);
+          t.attr("r", 3);
+        }
+      });
     })
     .on("mouseleave", () => {
       lastSquare = null;
@@ -713,6 +751,7 @@ function ttOverlay(data, w, rowNum) {
       d3.selectAll(".overlay-squares")
         .attr("fill", "#f0f0f000")
         .attr("stroke-width", 0);
+      d3.selectAll(".dots").attr("r", 2);
     });
 
   d3.selectAll(".overlay-group")
@@ -795,7 +834,7 @@ function cheapCollision(data, circleLayer, rowNum, w, r, isActive) {
       .data(allNodes)
       .join("circle")
       .attr("r", r)
-      .attr("fill", "#503f3f")
+      .attr("fill", coffee)
       .attr("class", "collision-circle");
     const simulation = d3
       .forceSimulation(allNodes)
@@ -899,3 +938,17 @@ axisBr.selectAll(".tick line").attr("stroke", "#4e3f3e");
 
 // remove main axis line
 axisBr.select(".domain").remove();
+
+//other event listeners
+
+document
+  .getElementById("student-population-info")
+  .addEventListener("click", () => {
+    const box = document.getElementById("enrollment-information-box");
+    box.classList.toggle("hidden");
+  });
+
+document.getElementById("facility-use-info").addEventListener("click", () => {
+  const box = document.getElementById("facility-use-information-box");
+  box.classList.toggle("hidden");
+});
