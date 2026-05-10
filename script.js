@@ -1,11 +1,24 @@
 var svg = d3.select("#map-vis").append("svg").attr("id", "svg");
+
+var sceneVis = d3.select("#vis").append("svg").attr("id", "scene-vis");
+
 const coffee = "#4e3f3e";
 const margin = { top: 2, right: 2, bottom: 50, left: 2 };
+
+const boundaryLayerSVG = svg.append("g").attr("class", "boundary-layer-svg");
+const dotsLayerSVG = svg.append("g").attr("class", "dots-layer-svg");
+
+const boundaryLayerScene = sceneVis
+  .append("g")
+  .attr("class", "boundary-layer-scene");
+const dotsLayerScene = sceneVis.append("g").attr("class", "dots-layer-scene");
+
 // const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 var width = 100;
 var height = 150;
 
 svg.attr("viewBox", "0 0 100 150");
+sceneVis.attr("viewBox", "0 0 140 150");
 
 var lastSquare = null;
 //scale for lat and long
@@ -32,15 +45,13 @@ const capColors = [
   d3.interpolateRdBu(1),
   d3.interpolateRdBu(1.7),
 ];
-//blue, white, red
-var vis = svg.append("g");
+
 const schoolsData = [];
 //array with each of the filtered types
 var typesMap;
 
-const boundaryLayer = svg.append("g").attr("class", "boundary-layer");
-const dotsLayer = svg.append("g").attr("class", "dots-layer");
 const ldiff = 118.03;
+
 d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
   data.sort((a, b) => d3.ascending(a.name, b.name));
 
@@ -88,17 +99,9 @@ d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
     capScale((capScale.domain()[0] + capScale.domain()[1]) / 2),
   );
   console.log("Test high value:", capScale(capScale.domain()[1]));
+  initScenes(schools);
+  dataTest(data, schools);
 
-  removeAll();
-  // schoolsVis(schoolsByType);
-  // typeVis(schoolsByType);
-  // makeKey();
-  drawDeKalbBoundary();
-  initCircles(schools);
-  drawSchoolsOnMap(0);
-  colorsByCapacity(0);
-
-  dataTest(data);
   originalData = data;
 });
 
@@ -117,8 +120,107 @@ function dataProcess(d) {
   };
 }
 
+function initGridVisMap(schools) {
+  //svg element = svg
+  removeAll(svg);
+  drawDeKalbBoundary(svg, boundaryLayerSVG);
+  initCircles(schools, dotsLayerSVG);
+  drawSchoolsOnMap(0, svg);
+  colorsByCapacity(0, svg);
+}
+
+function initScenes(schools) {
+  //svg element = sceneVis
+  var controller = new ScrollMagic.Controller();
+
+  removeAll(sceneVis);
+  drawDeKalbBoundary(sceneVis, boundaryLayerScene);
+  // schoolsVis(schoolsByType);
+  // typeVis(schoolsByType);
+  // makeKey();
+  initCircles(schools, dotsLayerScene);
+  drawSchoolsOnMap(0, sceneVis);
+  // colorsByCapacity(0, sceneVis);
+
+  var schoolsMapScene = new ScrollMagic.Scene({
+    triggerElement: "#vis-wrapper",
+    triggerHook: 0,
+
+    // pushFollowers: false,
+  })
+    .setPin("#vis-wrapper")
+    .addTo(controller);
+
+  schoolsMapScene.on("enter", function () {
+    console.log("start schools Map");
+    // colorsByCapacity(600, sceneVis);
+    // schoolsNoColor(schoolsByType);
+    // schoolsVis(schoolsByType);
+  });
+
+  schoolsMapScene.on("leave", function () {
+    console.log("leave schools Map ");
+    colorsByCapacity(600, sceneVis);
+    // removeAll();
+  });
+
+  var typeScene = new ScrollMagic.Scene({
+    triggerElement: "#typeVis",
+    triggerHook: 0.9,
+    duration: 200,
+  }).addTo(controller);
+
+  typeScene.on("enter", function () {
+    console.log("start");
+
+    removeKey(sceneVis);
+    schoolsByColor(600, sceneVis);
+  });
+
+  typeScene.on("leave", function () {
+    console.log("leave type scene");
+    // removeAll();
+  });
+  var repurposeScene = new ScrollMagic.Scene({
+    triggerElement: "#repurposeVis",
+    triggerHook: 0.9,
+    duration: 200,
+  }).addTo(controller);
+
+  repurposeScene.on("enter", function () {
+    console.log("start");
+    removeKey(sceneVis);
+    repurposeVis(0, sceneVis);
+  });
+
+  repurposeScene.on("leave", function () {
+    console.log("leave repurpose scene");
+    // removeAll();
+    // schoolsMapScene.removePin();
+  });
+
+  var gridScene = new ScrollMagic.Scene({
+    triggerElement: "#gridVis",
+    triggerHook: 0.7,
+    duration: 0,
+    // pushFollowers: false,
+  }).addTo(controller);
+
+  gridScene.on("enter", function () {
+    console.log("start grid!");
+    //remove everything bro
+    // move the thinggy up. stop being so sticky okay
+    // removeAll(scene);
+  });
+
+  gridScene.on("leave", function () {
+    console.log("leave grid scene");
+    //
+  });
+}
+
 //draw map
-function drawDeKalbBoundary() {
+function drawDeKalbBoundary(svg, boundaryLayer) {
   d3.json("dekalb-boundary.geojson").then(function (data) {
     const projection = d3
       .geoMercator()
@@ -130,35 +232,35 @@ function drawDeKalbBoundary() {
       .attr("transform", `translate(2,0)`)
       .selectAll("path")
       .data(data.features)
-      .enter()
-      .append("path")
+      .join("path")
       .attr("d", path)
       .attr("fill", "#ecd1de")
       .attr("opacity", 0.6)
       .attr("stroke", "#8d537b")
       .attr("stroke-width", 2);
   });
+  console.log("dekalb bound");
   return 0;
 }
 
-function schoolsNoColor(data) {
+function schoolsNoColor(data, svg) {
   svg.selectAll(".dots").attr("fill", typeColors[0]);
 }
 
-function schoolsByColor(tDuration) {
+function schoolsByColor(tDuration, svg) {
   svg
     .selectAll(".dots")
     .transition()
     .duration(tDuration)
     .attr("opacity", 1)
     .attr("fill", (d) => {
-      return typeColors[order[d.type]];
+      return futureUseColors[order[d.type]];
     });
 
-  // makeKey(0);
+  makeKey(0, svg);
 }
 
-function drawSchoolsOnMap(tDuration) {
+function drawSchoolsOnMap(tDuration, svg) {
   svg
     .selectAll(".dots")
     .transition()
@@ -182,7 +284,9 @@ function drawSchoolsOnMap(tDuration) {
     .attr("r", 2);
 }
 
-function initCircles(data) {
+function initCircles(data, dotsLayer) {
+  console.log("dots", dotsLayer);
+
   dotsLayer
     // .attr("transform", `translate(-50,-104)`)
     .selectAll(".dots")
@@ -228,7 +332,7 @@ function initCircles(data) {
   const tooltip = d3.select("#tooltip");
 }
 
-function colorsByCapacity() {
+function colorsByCapacity(transition, svg) {
   svg
     .selectAll(".dots")
     // .transition()
@@ -240,7 +344,7 @@ function colorsByCapacity() {
   // gradientKey(svg);
 }
 
-function schoolsVis(data) {
+function schoolsVis(data, svg) {
   //use both lat and lon on same scale to ensure its a 1x1 grid, not stretched
 
   //make scales
@@ -275,51 +379,20 @@ function schoolsVis(data) {
   // drawDeKalbBoundary();
 }
 
-function typeVis(data) {
-  //group by type
-  //sort alphabetically
-  drawGroup(data.get("High"), 100, 75, 14, 8, typeColors[0]);
-  drawGroup(data.get("Middle"), 100, 225, 10, 11, typeColors[1]);
-  drawGroup(data.get("Elementary"), 100, 305, 6, 18, typeColors[2]);
-  function drawGroup(data, tx, ty, r, perRow, color) {
-    svg
-      .append("g")
-      // .attr("transform", `translate(${tx},${ty})`)
-      .selectAll("circle")
-      .data(data)
-      .join("circle")
-      .attr("cx", (d, i) => (i % perRow) * r * 3)
-      .attr("cy", (d, i) => Math.floor(i / perRow) * r * 3)
-      .attr("r", r)
-      .attr("fill", color)
-
-      .on("mousemove", (event, d) => {
-        tooltip
-          .style("left", event.pageX + "px")
-          .style("top", event.pageY + "px")
-          .classed("hidden", false);
-
-        tooltip.select("#tooltip-school").text(d.name);
-      })
-      .on("mouseout", () => tooltip.classed("hidden", true));
-  }
-  const tooltip = d3.select("#tooltip");
-}
-
-function repurposeVis(tDuration) {
+function repurposeVis(tDuration, svg) {
   svg
     .selectAll(".dots")
     .transition()
     .duration(tDuration)
     .attr("opacity", 0.8)
     .attr("fill", (d) => {
-      return typeColors[order[d.f_use]];
+      return futureUseColors[order[d.f_use]];
     });
 
-  makeKey(1);
+  makeKey(1, svg);
 }
 
-function removeAll() {
+function removeAll(svg) {
   svg
     .selectAll("circle")
     .attr("opacity", 0)
@@ -328,32 +401,21 @@ function removeAll() {
     .remove();
 }
 
-function makeKey(visNum) {
+function makeKey(visNum, svg) {
   const itemHeight = 25;
-  var labels = [];
-  var title = "placeholder title";
-  var colors = [];
-  switch (visNum) {
-    case 0:
-      labels = ["High", "Middle", "Elementary"];
-      title = "School Types";
-      colors = typeColors;
-      break;
-    case 1:
-      labels = ["High", "Middle", "Elementary", "Close"];
-      title = "Future Use";
-      colors = typeColors;
-      break;
-  }
+  var labels = ["High", "Middle", "Elementary", "Close"];
+  var title = "School Type";
 
-  const key = svg.append("g").attr("class", "key");
-  // .attr("transform", `translate(${margin.left + width - 80}, ${margin.top})`);
+  const key = svg
+    .append("g")
+    .attr("class", "key")
+    .attr("transform", `translate (60, 10)`);
   key
     .append("text")
     .attr("x", 4)
-    .attr("y", -10)
+    .attr("y", 0)
     .text(title)
-    .attr("font-size", 15)
+    .attr("font-size", 8)
     .attr("font-weight", 500);
 
   // container group for items
@@ -362,13 +424,13 @@ function makeKey(visNum) {
     .data(labels)
     .enter()
     .append("g")
-    .attr("transform", (d, i) => `translate(10, ${i * 22 + 10})`);
+    .attr("transform", (d, i) => `translate(10, ${i * 9 + 10})`);
 
   // circles
   items
     .append("circle")
-    .attr("r", 6)
-    .attr("fill", (d, i) => colors[i])
+    .attr("r", 3)
+    .attr("fill", (d, i) => futureUseColors[i])
     .attr("opacity", 0.8)
     .attr("stroke", "black")
     .attr("stroke-width", "0.2");
@@ -376,20 +438,21 @@ function makeKey(visNum) {
   // text labels
   items
     .append("text")
-    .attr("x", 15)
-    .attr("y", 4)
+    .attr("x", 5)
+    .attr("y", 2)
     .text((d, i) => labels[i])
-    .attr("font-size", 13);
+    .attr("font-size", 6);
 
-  key
-    .insert("rect", ":first-child")
-    .attr("x", -10)
-    .attr("y", -30)
-    .attr("width", 120)
-    .attr("height", 120)
-    .attr("fill", "white")
-    .attr("stroke", "#ccc")
-    .attr("rx", 6);
+  //   key
+  //     .insert("rect", ":first-child")
+  //     .attr("x", -10)
+  //     .attr("y", -30)
+  //     // .attr("viewbox", "0 0 40 40")
+  //     .attr("width", 40)
+  //     .attr("height", 40)
+  //     .attr("fill", "white")
+  //     .attr("stroke", "#ccc")
+  //     .attr("rx", 6);
 }
 
 function gradientKey(svg) {
@@ -467,8 +530,8 @@ function gradientKey(svg) {
     .attr("rx", 6);
 }
 
-function removeKey() {
-  d3.select(".key").remove();
+function removeKey(svg) {
+  svg.select(".key").remove();
 }
 
 // var gwidth = document.getElementById("grid-vis").clientWidth;
@@ -499,13 +562,14 @@ var activeTypes = new Set();
 var buttonActions;
 var filteredData;
 
-function dataTest(data) {
+function dataTest(data, schools) {
   // Keep original data safe
   const originalData = data;
   filteredData = data;
   buttons();
   // Draw initial squares
   drawSquares(filteredData);
+  initGridVisMap(schools);
 }
 
 function buttons() {

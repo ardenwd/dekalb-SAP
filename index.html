@@ -41,136 +41,6 @@
         <title>Document</title>
       </head>
       <body>
-        <h1 class="title graphic-title serif">
-          DeKalb County Schools at a Glance
-        </h1>
-        <div class="test-vis">
-          <div class="side-bar grid-side">
-            <div class="filters">
-              <p class="key-header">
-                <!-- <span class="information" id="school-type-info">i</span> -->
-                School Type
-              </p>
-              <div class="button-group" id="elementary-button">
-                <p class="key-text">Elementary</p>
-              </div>
-              <div class="button-group" id="middle-button">
-                <p class="key-text">Middle</p>
-              </div>
-              <div class="button-group" id="high-button">
-                <p class="key-text">High</p>
-              </div>
-              <!-- <div class="button-group" id="to-close-button">
-                <p class="key-text">To Close</p>
-              </div> -->
-            </div>
-            <div class="filters">
-              <div
-                class="information-box hidden"
-                id="enrollment-information-box"
-              >
-                <p class="info-header" id="info-animation-header">
-                  Percent Capacity by School
-                </p>
-                <div class="info-list percents">
-                  <div class="info-list-item percents">
-                    <img class="dots-pics" src="./50-percent.png" />
-                    50% Capacity
-                  </div>
-                  <div class="info-list-item percents">
-                    <img class="dots-pics" src="./100-percent.png" />
-                    100% Capacity
-                  </div>
-                </div>
-                <div class="gray-line"></div>
-                <p class="info-header total-en-header">Total Enrollment</p>
-                <div id="blue-rect"></div>
-                <div></div>
-              </div>
-              <p class="key-header">
-                <span class="information" id="student-population-info">i</span
-                >Student Population
-              </p>
-              <div class="button-group" id="atoms-button">
-                <p class="key-text">Capacity Percentage</p>
-              </div>
-              <div class="button-group" id="color-button">
-                <p class="key-text">Total Enrollment</p>
-              </div>
-            </div>
-            <div class="filters">
-              <div
-                class="information-box hidden"
-                id="facility-use-information-box"
-              >
-                <p class="info-header">Type of School</p>
-                <div class="info-list">
-                  <div class="info-list-item">
-                    <span
-                      class="info-square"
-                      style="background-color: #d7e3ff"
-                    ></span
-                    >Elementary
-                  </div>
-                  <div class="info-list-item">
-                    <span
-                      class="info-square"
-                      style="background-color: #decafe"
-                    ></span
-                    >Middle
-                  </div>
-                  <div class="info-list-item">
-                    <span
-                      class="info-square"
-                      style="background-color: #ffdaee"
-                    ></span
-                    >High
-                  </div>
-                  <div class="info-list-item">
-                    <span
-                      class="info-square"
-                      style="background-color: #da5656"
-                    ></span
-                    >To Close
-                  </div>
-                  <div class="info-list-item">
-                    <span class="info-square" id="future-use-square"></span>
-
-                    Future Use
-                  </div>
-                </div>
-              </div>
-              <p class="key-header">
-                <span class="information" id="facility-use-info">i</span
-                >Facility Use
-              </p>
-              <div class="button-group" id="current-use-button">
-                <p class="key-text">Current Use</p>
-              </div>
-              <div class="button-group" id="future-use-button">
-                <p class="key-text">Future Use</p>
-              </div>
-            </div>
-          </div>
-          <div id="grid-vis"></div>
-          <div class="fact-sheet grid-side" id="right-bar">
-            <h2 class="map-header">DeKalb County Boundary</h2>
-            <div id="map-vis"></div>
-            <!-- <div class="map-buttons">
-              <div class="map-filters">
-                <div class="button-group map-button-group" id="capacity-button">
-                  <p class="key-text map-text">Capacity</p>
-                </div>
-                <div
-                  class="button-group map-button-group"
-                  id="current-use-map-button"
-                >
-                  <p class="key-text map-text">Current Use</p>
-                </div>
-              </div>
-            </div> -->
-          </div>
-        </div>
         <div class="main-story">
           <div class="title-container">
             <h1 class="title">
@@ -180,20 +50,21 @@
               Exploring the proposed changes for closing and repurposing
               underutilized schools in the DCSD.
             </h2>
-            <p class="title-date">Updated: March 8 2026, 7:37pm EST</p>
+            <p class="title-date">Updated: May 10 2026, 3:20pm EST</p>
           </div>
           <!-- sections indicate text areas -->
           <div class="main-body">
             <p class="intro-text">
-              DeKalb County schools are facing an enrollment crisis. Continuing
-              decline in enrollment has caused the district to establish an
-              advisory board to reallocate buildings in the district for
-              alternative uses. These changes are intended to address under and
-              overcapacity in the district’s schools, improve out of date
-              facilities, strengthen student programs, and make transportation
-              routes more efficient. Following months of research, the Student
-              Assignment Project (SAP) committee has proposed a list of
-              “scenarios” to close, renovate, and repurpose school buildings.
+              DeKalb County schools in Atlanta, Georgia, are facing an
+              enrollment crisis. Continuing decline in enrollment has caused the
+              district to establish an advisory board to reallocate buildings in
+              the district for alternative uses. These changes are intended to
+              address under and overcapacity in the district’s schools, improve
+              out of date facilities, strengthen student programs, and make
+              transportation routes more efficient. Following months of
+              research, the Student Assignment Project (SAP) committee has
+              proposed a list of “scenarios” to close, renovate, and repurpose
+              school buildings.
             </p>
 
             <div id="vis-wrapper">
@@ -227,16 +98,151 @@
                 some other education facilities.
               </p>
             </div>
-            <div class="section"></div>
-
-            <svg id="viz" width="1200" height="800"></svg>
-            <div id="tooltip" class="hidden tooltip">
-              <p id="tooltip-school"></p>
-            </div>
-            <div id="tooltip2" class="hidden tooltip">
-              <p id="tooltip2-school"></p>
+            <div class="section last white-bg" id="gridVis">
+              <p class="story-text">
+                Use this tool to explore the enrollment data associated with
+                schools being considered in the SAP.
+              </p>
             </div>
           </div>
+        </div>
+        <div class="vis2 white-bg">
+          <h1 class="title graphic-title serif">
+            DeKalb County Schools at a Glance
+          </h1>
+          <div class="test-vis">
+            <div class="side-bar grid-side">
+              <div class="filters">
+                <p class="key-header">
+                  <!-- <span class="information" id="school-type-info">i</span> -->
+                  School Type
+                </p>
+                <div class="button-group" id="elementary-button">
+                  <p class="key-text">Elementary</p>
+                </div>
+                <div class="button-group" id="middle-button">
+                  <p class="key-text">Middle</p>
+                </div>
+                <div class="button-group" id="high-button">
+                  <p class="key-text">High</p>
+                </div>
+                <!-- <div class="button-group" id="to-close-button">
+                <p class="key-text">To Close</p>
+              </div> -->
+              </div>
+              <div class="filters">
+                <div
+                  class="information-box hidden"
+                  id="enrollment-information-box"
+                >
+                  <p class="info-header" id="info-animation-header">
+                    Percent Capacity by School
+                  </p>
+                  <div class="info-list percents">
+                    <div class="info-list-item percents">
+                      <img class="dots-pics" src="./50-percent.png" />
+                      50% Capacity
+                    </div>
+                    <div class="info-list-item percents">
+                      <img class="dots-pics" src="./100-percent.png" />
+                      100% Capacity
+                    </div>
+                  </div>
+                  <div class="gray-line"></div>
+                  <p class="info-header total-en-header">Total Enrollment</p>
+                  <div id="blue-rect"></div>
+                  <div></div>
+                </div>
+                <p class="key-header">
+                  <span class="information" id="student-population-info">i</span
+                  >Student Population
+                </p>
+                <div class="button-group" id="atoms-button">
+                  <p class="key-text">Capacity Percentage</p>
+                </div>
+                <div class="button-group" id="color-button">
+                  <p class="key-text">Total Enrollment</p>
+                </div>
+              </div>
+              <div class="filters">
+                <div
+                  class="information-box hidden"
+                  id="facility-use-information-box"
+                >
+                  <p class="info-header">Type of School</p>
+                  <div class="info-list">
+                    <div class="info-list-item">
+                      <span
+                        class="info-square"
+                        style="background-color: #d7e3ff"
+                      ></span
+                      >Elementary
+                    </div>
+                    <div class="info-list-item">
+                      <span
+                        class="info-square"
+                        style="background-color: #decafe"
+                      ></span
+                      >Middle
+                    </div>
+                    <div class="info-list-item">
+                      <span
+                        class="info-square"
+                        style="background-color: #ffdaee"
+                      ></span
+                      >High
+                    </div>
+                    <div class="info-list-item">
+                      <span
+                        class="info-square"
+                        style="background-color: #da5656"
+                      ></span
+                      >To Close
+                    </div>
+                    <div class="info-list-item">
+                      <span class="info-square" id="future-use-square"></span>
+
+                      Future Use
+                    </div>
+                  </div>
+                </div>
+                <p class="key-header">
+                  <span class="information" id="facility-use-info">i</span
+                  >Facility Use
+                </p>
+                <div class="button-group" id="current-use-button">
+                  <p class="key-text">Current Use</p>
+                </div>
+                <div class="button-group" id="future-use-button">
+                  <p class="key-text">Future Use</p>
+                </div>
+              </div>
+            </div>
+            <div id="grid-vis"></div>
+            <div class="fact-sheet grid-side" id="right-bar">
+              <h2 class="map-header">DeKalb County Boundary</h2>
+              <div id="map-vis"></div>
+              <!-- <div class="map-buttons">
+              <div class="map-filters">
+                <div class="button-group map-button-group" id="capacity-button">
+                  <p class="key-text map-text">Capacity</p>
+                </div>
+                <div
+                  class="button-group map-button-group"
+                  id="current-use-map-button"
+                >
+                  <p class="key-text map-text">Current Use</p>
+                </div>
+              </div>
+            </div> -->
+            </div>
+          </div>
+        </div>
+        <div id="tooltip" class="hidden tooltip">
+          <p id="tooltip-school"></p>
+        </div>
+        <div id="tooltip2" class="hidden tooltip">
+          <p id="tooltip2-school"></p>
         </div>
         <script src="script.js"></script>
       </body>
