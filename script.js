@@ -2,7 +2,10 @@ var svg = d3.select("#map-vis").append("svg").attr("id", "svg");
 
 var sceneVis = d3.select("#vis").append("svg").attr("id", "scene-vis");
 
+var titleVis = d3.select("#title-map").append("svg").attr("id", "title-vis");
+
 const coffee = "#4e3f3e";
+const latte = "#6a6969";
 const margin = { top: 2, right: 2, bottom: 50, left: 2 };
 
 const boundaryLayerSVG = svg.append("g").attr("class", "boundary-layer-svg");
@@ -13,12 +16,16 @@ const boundaryLayerScene = sceneVis
   .attr("class", "boundary-layer-scene");
 const dotsLayerScene = sceneVis.append("g").attr("class", "dots-layer-scene");
 
+const boundaryLayerTM = titleVis.append("g").attr("class", "boundary-layer-tm");
+const dotsLayerTM = titleVis.append("g").attr("class", "dots-layer-tm");
+
 // const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 var width = 100;
 var height = 150;
 
 svg.attr("viewBox", "0 0 100 150");
 sceneVis.attr("viewBox", "0 0 140 150");
+titleVis.attr("viewBox", "0 0 100 140");
 
 var lastSquare = null;
 //scale for lat and long
@@ -100,7 +107,15 @@ d3.csv("dekalb-schools-new.csv", dataProcess).then(function (data) {
   );
   console.log("Test high value:", capScale(capScale.domain()[1]));
   initScenes(schools);
+  makeKey(0, sceneVis);
+  schoolsByColor(600, sceneVis);
+
   dataTest(data, schools);
+
+  const closingGroup = titleVis
+    .selectAll(".dots")
+    .filter((d) => d.f_use === "Close");
+  console.log("closing group", closingGroup);
 
   originalData = data;
 });
@@ -123,7 +138,7 @@ function dataProcess(d) {
 function initGridVisMap(schools) {
   //svg element = svg
   removeAll(svg);
-  drawDeKalbBoundary(svg, boundaryLayerSVG);
+  drawDeKalbBoundary(svg, boundaryLayerSVG, "#ecd1de", "#8d537b");
   initCircles(schools, dotsLayerSVG);
   drawSchoolsOnMap(0, svg);
   colorsByCapacity(0, svg);
@@ -134,33 +149,27 @@ function initScenes(schools) {
   var controller = new ScrollMagic.Controller();
 
   removeAll(sceneVis);
-  drawDeKalbBoundary(sceneVis, boundaryLayerScene);
-  // schoolsVis(schoolsByType);
-  // typeVis(schoolsByType);
-  // makeKey();
+  drawDeKalbBoundary(sceneVis, boundaryLayerScene, "#ecd1de", "#8d537b");
   initCircles(schools, dotsLayerScene);
   drawSchoolsOnMap(0, sceneVis);
-  // colorsByCapacity(0, sceneVis);
 
   var schoolsMapScene = new ScrollMagic.Scene({
     triggerElement: "#vis-wrapper",
     triggerHook: 0,
-
     // pushFollowers: false,
   })
     .setPin("#vis-wrapper")
     .addTo(controller);
 
   schoolsMapScene.on("enter", function () {
-    console.log("start schools Map");
-    // colorsByCapacity(600, sceneVis);
-    // schoolsNoColor(schoolsByType);
-    // schoolsVis(schoolsByType);
+    console.log("start schools Map!");
+    // removeKey(sceneVis);
+    schoolsByColor(600, sceneVis);
   });
 
   schoolsMapScene.on("leave", function () {
     console.log("leave schools Map ");
-    colorsByCapacity(600, sceneVis);
+    // colorsByCapacity(600, sceneVis);
     // removeAll();
   });
 
@@ -172,8 +181,6 @@ function initScenes(schools) {
 
   typeScene.on("enter", function () {
     console.log("start");
-
-    removeKey(sceneVis);
     schoolsByColor(600, sceneVis);
   });
 
@@ -181,6 +188,7 @@ function initScenes(schools) {
     console.log("leave type scene");
     // removeAll();
   });
+
   var repurposeScene = new ScrollMagic.Scene({
     triggerElement: "#repurposeVis",
     triggerHook: 0.9,
@@ -188,9 +196,9 @@ function initScenes(schools) {
   }).addTo(controller);
 
   repurposeScene.on("enter", function () {
-    console.log("start");
-    removeKey(sceneVis);
-    repurposeVis(0, sceneVis);
+    console.log("start repurpose");
+    // removeKey(sceneVis);
+    repurposeVis(600, sceneVis);
   });
 
   repurposeScene.on("leave", function () {
@@ -219,8 +227,17 @@ function initScenes(schools) {
   });
 }
 
+function initTitleMap(schools) {
+  //svg element = titleVis
+  removeAll(titleVis);
+  drawDeKalbBoundary(titleVis, boundaryLayerTM, "#ecf0fa", "#7a6953b6");
+  initCircles(schools, dotsLayerTM);
+  drawSchoolsOnMap(0, titleVis);
+  closingAnimation(0, titleVis);
+}
+
 //draw map
-function drawDeKalbBoundary(svg, boundaryLayer) {
+function drawDeKalbBoundary(svg, boundaryLayer, fill, stroke) {
   d3.json("dekalb-boundary.geojson").then(function (data) {
     const projection = d3
       .geoMercator()
@@ -234,10 +251,10 @@ function drawDeKalbBoundary(svg, boundaryLayer) {
       .data(data.features)
       .join("path")
       .attr("d", path)
-      .attr("fill", "#ecd1de")
-      .attr("opacity", 0.6)
-      .attr("stroke", "#8d537b")
-      .attr("stroke-width", 2);
+      .attr("fill", fill)
+      .attr("opacity", 0.8)
+      .attr("stroke", stroke)
+      .attr("stroke-width", 1);
   });
   console.log("dekalb bound");
   return 0;
@@ -257,7 +274,7 @@ function schoolsByColor(tDuration, svg) {
       return futureUseColors[order[d.type]];
     });
 
-  makeKey(0, svg);
+  blockItem4();
 }
 
 function drawSchoolsOnMap(tDuration, svg) {
@@ -281,7 +298,7 @@ function drawSchoolsOnMap(tDuration, svg) {
     })
     //118.05 is the avg difference between the lat and lon
     .attr("cy", (d) => yScale(d.lat))
-    .attr("r", 2);
+    .attr("r", 2.5);
 }
 
 function initCircles(data, dotsLayer) {
@@ -293,6 +310,7 @@ function initCircles(data, dotsLayer) {
     .data(data)
     .join("circle")
     .attr("class", "dots")
+
     .on("mousemove", (event, d) => {
       const name = d.name;
       tooltip
@@ -330,6 +348,66 @@ function initCircles(data, dotsLayer) {
     });
 
   const tooltip = d3.select("#tooltip");
+}
+function closingAnimation(tDuration, svg) {
+  console.log(svg);
+  svg
+    .selectAll(".dots")
+    .attr("r", 3)
+    .attr("opacity", 0.8)
+    .attr("fill", "#817b72");
+  // .attr("fill", (d) => (d.f_use === "Close" ? "#ff4343" : "#ffffff"));
+}
+
+function popAnimation(sel) {
+  console.log(sel);
+  console.log("POP!");
+  const r = 2.5;
+  sel
+    // .attr("r", r)
+    // .attr("opacity", 0.8)
+    // .transition()
+    // .duration(200)
+    // .attr("r", r * 1.4)
+    // .transition()
+    // .duration(200)
+    // .attr("r", r * 2)
+    .transition()
+    .duration(1500)
+    .attr("r", 0)
+    // .attr("fill", coffee)
+    .attr("opacity", 0)
+    .transition()
+    .duration(1200)
+    .attr("r", r)
+    .attr("opacity", 0.8)
+    .transition()
+    .duration(1500)
+    .attr("r", 0)
+    // .attr("fill", coffee)
+    .attr("opacity", 0)
+    .transition()
+    .duration(1200)
+    .attr("r", r)
+    .attr("opacity", 0.8)
+    .transition()
+    .duration(1500)
+    .attr("r", 0)
+    // .attr("fill", coffee)
+    .attr("opacity", 0)
+    .transition()
+    .duration(1200)
+    .attr("r", r)
+    .attr("opacity", 0.8)
+    .transition()
+    .duration(1500)
+    .attr("r", 0)
+    // .attr("fill", coffee)
+    .attr("opacity", 0)
+    .transition()
+    .duration(1200)
+    .attr("r", r)
+    .attr("opacity", 0.8);
 }
 
 function colorsByCapacity(transition, svg) {
@@ -388,8 +466,8 @@ function repurposeVis(tDuration, svg) {
     .attr("fill", (d) => {
       return futureUseColors[order[d.f_use]];
     });
-
-  makeKey(1, svg);
+  unBlockItem4();
+  // makeKey(1, svg);
 }
 
 function removeAll(svg) {
@@ -399,6 +477,28 @@ function removeAll(svg) {
     .transition()
     .duration(1200)
     .remove();
+}
+
+function blockItem4() {
+  const key = d3.select(".key");
+  key
+    .append("rect")
+
+    .attr("class", "white-out")
+    .attr("opacity", 1)
+    .attr("transform", `translate (6, 33)`)
+    .attr("width", 40)
+    .attr("height", 10)
+    .attr("fill", "white");
+}
+
+function unBlockItem4() {
+  d3.selectAll(".white-out")
+    .transition()
+    .duration(600)
+    .attr("opacity", 0)
+    .remove();
+  console.console.log("unblock");
 }
 
 function makeKey(visNum, svg) {

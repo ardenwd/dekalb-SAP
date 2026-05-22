@@ -3,9 +3,10 @@ $color_2: rgb(116, 116, 116);
 $color_3: rgb(5, 5, 0, 0.8);
 $coffee: #4e3f3e;
 $latte: #6a6969;
+$darkest-brown: "#2d2b2b";
 $lightest-gray: #d0d0d0;
 $color_5: rgba(0, 0, 0, 1);
-$font-family_1: "Work Sans", "Open Sans", Arial, Helvetica, sans-serif;
+$sans-serif:  "Open Sans","Work Sans", Arial, Helvetica, sans-serif;
 $font-family_2: "Averia Serif Libre";
 $hedvig: "Hedvig Letters Serif";
 $inter: Inter;
@@ -19,7 +20,7 @@ $robins-egg: #B1D1C7;
 
 
 html {
-	font-family: $font-family_1;
+	font-family: $sans-serif;
 	cursor: default;
 	font-size: 16px;
 	display: flex;
@@ -35,12 +36,15 @@ a {
 	z-index: 10;
 	font-family: $inter;
     font-weight: 300;
-	padding: 0.5rem;
+	// padding: 0.5rem;
 	font-size: 1.1rem;
 	text-align: center;
 	color: $coffee;
 	width: 100%;
 	background-color: $robins-egg;
+}
+#img-logo{
+	width: 10%;
 }
 .serif {
 	font-family: $hedvig;
@@ -55,16 +59,30 @@ body {
 	}
 .main-story {
 	margin: 0% 25%;
+	// padding-top: 1rem;
 }
 .test-vis {
 	margin: 0% 10%;
 	display: flex;
 	flex-direction: row;
 	width: calc(100% - 20%);
-	height: 100%;
+	max-height: 100%;
 	justify-content: center;
 	gap:2.4rem;
 }
+.graphic-title{
+	color: $darkest-brown;
+}
+// #title-map, 
+#title-gif-container {
+	max-width: 25%;
+    margin: auto;
+
+    padding-top: 6rem;
+}
+
+#title-gif {width: 100%;}
+
 .title-container {
 	padding: 1rem 0 4rem 0;
 	margin: auto;
@@ -75,10 +93,10 @@ body {
 	font-size: 3rem;
 	font-weight: 400;
     font-family: $hedvig;
-    color: $coffee;
+    color: $darkest-brown;
 	text-align: center;
 	text-wrap: balance;
-    margin-top: 4rem;
+    margin-top: 1rem;
     margin-bottom: 2rem;
 }
 .subtitle {
@@ -102,12 +120,16 @@ body {
 	font-weight: 500;
 	font-size: 1.8rem;
 	text-align: center;
+	font-family: $hedvig;
 }
 p {
 	font-size: 1.1rem;
 }
+
 .intro-text {
 	padding-bottom: 0px;
+	line-height: 1.8rem;
+	text-indent: 1.8rem;
 }
 .story-text {
 	font-size: 1.3rem;
@@ -125,7 +147,7 @@ p {
 	border-radius: 6px;
 	pointer-events: none;
 	font-size: 0.9rem;
-	z-index: 3;
+	z-index: 10;
 }
 #tooltip2 {
 	position: absolute;
@@ -135,7 +157,7 @@ p {
 	border-radius: 6px;
 	pointer-events: none;
 	font-size: 0.9rem;
-	z-index: 3;
+	z-index: 10;
 }
 .hidden {
 	display: none;
@@ -161,7 +183,9 @@ svg {
 .section.first, .section.last {
 	padding-bottom: 0px;
 }
-
+.section.last{
+	padding-top: 6rem;
+}
 .white-bg{
 	background-color: white;
 	z-index: 9;
@@ -206,7 +230,7 @@ svg {
 .map-header {
 	text-align: center;
     width: 80%;
-    font-size: 1.2rem;
+    font-size: 1.8rem;
     font-family: $hedvig;
 
 	font-weight: 500;

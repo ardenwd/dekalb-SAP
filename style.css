@@ -1,5 +1,5 @@
 html {
-  font-family: "Work Sans", "Open Sans", Arial, Helvetica, sans-serif;
+  font-family: "Open Sans", "Work Sans", Arial, Helvetica, sans-serif;
   cursor: default;
   font-size: 16px;
   display: flex;
@@ -17,12 +17,15 @@ a {
   z-index: 10;
   font-family: Inter;
   font-weight: 300;
-  padding: 0.5rem;
   font-size: 1.1rem;
   text-align: center;
   color: #4e3f3e;
   width: 100%;
   background-color: #B1D1C7;
+}
+
+#img-logo {
+  width: 10%;
 }
 
 .serif {
@@ -47,9 +50,23 @@ body {
   display: flex;
   flex-direction: row;
   width: 80%;
-  height: 100%;
+  max-height: 100%;
   justify-content: center;
   gap: 2.4rem;
+}
+
+.graphic-title {
+  color: "#2d2b2b";
+}
+
+#title-gif-container {
+  max-width: 25%;
+  margin: auto;
+  padding-top: 6rem;
+}
+
+#title-gif {
+  width: 100%;
 }
 
 .title-container {
@@ -62,10 +79,10 @@ body {
   font-size: 3rem;
   font-weight: 400;
   font-family: "Hedvig Letters Serif";
-  color: #4e3f3e;
+  color: "#2d2b2b";
   text-align: center;
   text-wrap: balance;
-  margin-top: 4rem;
+  margin-top: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -93,6 +110,7 @@ body {
   font-weight: 500;
   font-size: 1.8rem;
   text-align: center;
+  font-family: "Hedvig Letters Serif";
 }
 
 p {
@@ -101,6 +119,8 @@ p {
 
 .intro-text {
   padding-bottom: 0px;
+  line-height: 1.8rem;
+  text-indent: 1.8rem;
 }
 
 .story-text {
@@ -120,7 +140,7 @@ p {
   border-radius: 6px;
   pointer-events: none;
   font-size: 0.9rem;
-  z-index: 3;
+  z-index: 10;
 }
 
 #tooltip2 {
@@ -131,7 +151,7 @@ p {
   border-radius: 6px;
   pointer-events: none;
   font-size: 0.9rem;
-  z-index: 3;
+  z-index: 10;
 }
 
 .hidden {
@@ -159,6 +179,10 @@ svg {
 
 .section.first, .section.last {
   padding-bottom: 0px;
+}
+
+.section.last {
+  padding-top: 6rem;
 }
 
 .white-bg {
@@ -200,7 +224,7 @@ svg {
 .map-header {
   text-align: center;
   width: 80%;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   font-family: "Hedvig Letters Serif";
   font-weight: 500;
   color: #4e3f3e;
