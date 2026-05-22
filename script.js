@@ -728,7 +728,7 @@ function applyFilters() {
 
   const result =
     selected.length === 0
-      ? typesMap.All
+      ? []
       : selected.flatMap((type) => typesMap[type] || []);
   filteredData = result;
   drawSquares(result);
@@ -1114,5 +1114,10 @@ document
 
 document.getElementById("facility-use-info").addEventListener("click", () => {
   const box = document.getElementById("facility-use-information-box");
+  box.classList.toggle("hidden");
+});
+
+document.getElementById("school-type-info").addEventListener("click", () => {
+  const box = document.getElementById("school-type-information-box");
   box.classList.toggle("hidden");
 });

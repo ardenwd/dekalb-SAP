@@ -285,6 +285,10 @@ svg {
   background-color: white;
 }
 
+#school-type-information-box {
+  padding-bottom: 0rem;
+}
+
 #enrollment-information-box {
   padding-bottom: 0.6rem;
 }
