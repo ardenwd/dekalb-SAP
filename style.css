@@ -217,14 +217,14 @@ svg {
 
 #map-vis {
   min-width: 0;
-  height: 100%;
+  width: 80%;
   margin: 0px 0 0 0;
 }
 
 .map-header {
   text-align: center;
   width: 80%;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-family: "Hedvig Letters Serif";
   font-weight: 500;
   color: #4e3f3e;
